@@ -33,72 +33,47 @@ public class ConstraintViolationWrapper<T> {
         this.constraintViolation = constraintViolation;
     }
 
-    /**
-     * {@see ConstraintViolation#getMessage}
-     */
     public String getMessage() {
         return constraintViolation.getMessage();
     }
 
-    /**
-     * {@see ConstraintViolation#getMessageTemplate}
-     */
+
     public String getMessageTemplate() {
         return constraintViolation.getMessageTemplate();
     }
 
-    /**
-     * {@see ConstraintViolation#getRootBean}
-     */
     public T getRootBean() {
         return constraintViolation.getRootBean();
     }
 
-    /**
-     * {@see ConstraintViolation#getRootBeanClass}
-     */
     public Class<T> getRootBeanClass() {
         return constraintViolation.getRootBeanClass();
     }
 
-    /**
-     * {@see ConstraintViolation#getLeafBean}
-     */
+
     public Object getLeafBean() {
         return constraintViolation.getLeafBean();
     }
 
-    /**
-     * {@see ConstraintViolation#getExecutableParameters}
-     */
+
     public Object[] getExecutableParameters() {
         return constraintViolation.getExecutableParameters();
     }
 
-    /**
-     * {@see ConstraintViolation#getExecutableReturnValue}
-     */
+
     public Object getExecutableReturnValue() {
         return constraintViolation.getExecutableReturnValue();
     }
 
-    /**
-     * {@see ConstraintViolation#getPropertyPath}
-     */
+
     public Path getPropertyPath() {
         return constraintViolation.getPropertyPath();
     }
 
-    /**
-     * {@see ConstraintViolation#getInvalidValue}
-     */
     public Object getInvalidValue() {
         return constraintViolation.getInvalidValue();
     }
 
-    /**
-     * {@see ConstraintViolation#getConstraintDescriptor}
-     */
     public ConstraintDescriptor<?> getConstraintDescriptor() {
         return constraintViolation.getConstraintDescriptor();
     }

@@ -199,7 +199,7 @@ public final class IndirectCollectionsFactory {
         boolean useJ2SE7IndirectCollections = Boolean.valueOf(propertyValue);
         
         //try this on JDK 8+ only (see bug 464096)
-        if (!useJ2SE7IndirectCollections && JavaSEPlatform.CURRENT.atLeast(JavaSEPlatform.v1_8)) {
+        if (!useJ2SE7IndirectCollections) { //Java 10
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     final Class support = AccessController.doPrivileged(new PrivilegedClassForName(JDK8_SUPPORT_PROVIDER, true, IndirectCollectionsFactory.class.getClassLoader()));

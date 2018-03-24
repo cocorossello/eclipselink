@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.lang.annotation.ElementType;
+import java.util.stream.Collectors;
 
 /**
  * Responsible for performing automatic bean validation on call back events.
@@ -108,12 +109,29 @@ public class BeanValidationListener extends DescriptorEventAdapter {
                 // The transaction would be rolled back automatically
                 // TODO need to I18N this.
                 throw new ConstraintViolationException(
-                        "Bean Validation constraint(s) violated while executing Automatic Bean Validation on callback event:'" +
-                                callbackEventName + "'. Please refer to embedded ConstraintViolations for details.",
+                        "Bean Validation constraint(s) violated on callback event:'" +
+                                callbackEventName + "'. Errors: " + getPrettyMessage(constraintViolations),
                         (Set<ConstraintViolation<?>>) (Object) constraintViolations); /* Do not remove the explicit
                         cast. This issue is related to capture#a not being instance of capture#b. */
             }
         }
+    }
+
+
+    public static String getPrettyMessage(ConstraintViolation<?> constraint) {
+        if (constraint.getPropertyPath() != null) {
+            return constraint.getPropertyPath() + ":" + constraint.getMessage();
+        } else {
+            return constraint.getMessage();
+        }
+    }
+
+    public static String getPrettyMessage(Set<ConstraintViolation<Object>> constraints) {
+        String s = "";
+        for(ConstraintViolation contraint: constraints) {
+            s = s+getPrettyMessage(contraint);
+        }
+        return s;
     }
 
     private Validator getValidator(DescriptorEvent event) {
