@@ -22,12 +22,32 @@ xr
 
 ant -f antbuild.xml -Djunit.lib=C:\Users\cocor\.gradle\caches\modules-2\files-2.1\junit\junit\4.12\2973d150c0dc1fefe998f834810d68f278ea58ec\junit-4.12.jar build-distribution
 
+Del eclipselink.jar de la raiz:
 
-ant -f uploadToNexus.xml -Drelease.version=2.6.108 -Dbuild.type=SNAPSHOT -Dgit.hash=32adsalksdfjfsdao123213
+Quitar commonj y javax del jar, asi como los html
+
+De org/eclipse/persistence quitar 
+dbws
+jaxb
+sdo
+
+De org/eclipse/persistence/internal quitar 
+dbws
+jaxb
+xr
+
+ 
+ 
+ uploadToNexus.xml :
+ Poner el repo-user y repo-password
+ 
+ant -f uploadToNexus.xml -Drelease.version=2.6.109 -Dbuild.type=SNAPSHOT -Dgit.hash=32adsalksdfjfsdao123213
 
 
  coger de lib el maven-ant-tasks.jar y ponerlo en ANT_HOME/lib
+
  
- Poner el repo-user y repo-password
  
  
+ 
+ Para cambiar asm hay que cambiar en plugins el projecto de asm y los jar de asm (el src y el otro...)
