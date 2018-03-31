@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.lang.annotation.ElementType;
+import java.util.stream.Collectors;
 
 /**
  * Responsible for performing automatic bean validation on call back events.
@@ -115,13 +116,26 @@ public class BeanValidationListener extends DescriptorEventAdapter {
                 // Throw a ConstrainViolationException as required by the spec.
                 // The transaction would be rolled back automatically
                 throw new ConstraintViolationException(
-                        ExceptionLocalization.buildMessage("bean_validation_constraint_violated", 
-                                new Object[]{callbackEventName, source.getClass().getName()}),
+                        "Bean Validation constraint(s) violated on callback event:'" +
+                                callbackEventName + "'. Errors: " + getPrettyMessage(constraintViolations),
                         (Set<ConstraintViolation<?>>) (Object) constraintViolations); /* Do not remove the explicit
                         cast. This issue is related to capture#a not being instance of capture#b. */
             }
         }
     }
+
+    public static String getPrettyMessage(ConstraintViolation<?> constraint) {
+        if (constraint.getPropertyPath() != null) {
+            return constraint.getPropertyPath() + ":" + constraint.getMessage();
+        } else {
+            return constraint.getMessage();
+        }
+    }
+
+    public static String getPrettyMessage(Set<ConstraintViolation<Object>> constraints) {
+        return constraints.stream().map(BeanValidationListener::getPrettyMessage).collect(Collectors.joining(", "));
+    }
+
 
     private Validator getValidator(DescriptorEvent event) {
         ClassDescriptor descriptor = event.getDescriptor();

@@ -39,6 +39,7 @@ import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -310,7 +311,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /** temporarily holds a list of events that must be fired after the current operation completes.
      *  Initialy created for postClone events.
      */
-    protected List<DescriptorEvent> deferredEvents;
+    protected List<DescriptorEvent> deferredEvents = Collections.synchronizedList(new ArrayList());
 
     /** records that the UOW is executing deferred events.  Events could cause operations to occur that may attempt to restart the event execution.  This must be avoided*/
     protected boolean isExecutingEvents;
@@ -1319,10 +1320,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Add an event to the deferred list.  Events will be fired after the operation completes
      */
     public void deferEvent(DescriptorEvent event){
-        if (this.deferredEvents == null){
-            this.deferredEvents = new ArrayList<DescriptorEvent>();
+        synchronized (this) {
+            this.deferredEvents.add(event);
         }
-        this.deferredEvents.add(event);
     }
 
     /**
@@ -1519,17 +1519,19 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Causes any deferred events to be fired.  Called after operation completes
      */
     public void executeDeferredEvents(){
-        if (!this.isExecutingEvents && this.deferredEvents != null) {
-            this.isExecutingEvents = true;
-            try {
-                for (int i = 0; i < this.deferredEvents.size(); ++i) {
-                    // the size is checked every time here because the list may grow
-                    DescriptorEvent event = this.deferredEvents.get(i);
-                    event.getDescriptor().getEventManager().executeEvent(event);
+        synchronized (this) {
+            if (!this.isExecutingEvents && this.deferredEvents != null) {
+                this.isExecutingEvents = true;
+                try {
+                    for (int i = 0; i < this.deferredEvents.size(); ++i) {
+                        // the size is checked every time here because the list may grow
+                        DescriptorEvent event = this.deferredEvents.get(i);
+                        event.getDescriptor().getEventManager().executeEvent(event);
+                    }
+                    this.deferredEvents.clear();
+                } finally {
+                    this.isExecutingEvents = false;
                 }
-                this.deferredEvents.clear();
-            } finally {
-                this.isExecutingEvents = false;
             }
         }
     }

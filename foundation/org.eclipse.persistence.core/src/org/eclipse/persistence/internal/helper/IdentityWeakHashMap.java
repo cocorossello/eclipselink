@@ -236,7 +236,11 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
         threshold = (int)(newCapacity * loadFactor);
         entries = newEntries;
         for (int i = oldCapacity; i-- > 0;) {
+            int limitCounter = 0;
             for (WeakEntry old = oldEntries[i]; old != null;) {
+                if (limitCounter++ > 500000) {
+                    throw new IllegalStateException("Eclipselink ha fallado en rehash: entries:" + entries);
+                }
                 WeakEntry e = old;
                 old = old.next;
                 int index = (e.hash & 0x7FFFFFFF) % newCapacity;
@@ -261,31 +265,37 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_not_supported_identityweakhashmap"));
         }
         cleanUp();
-        WeakEntry[] copyOfEntries = entries;
-        int hash = System.identityHashCode(key);
-        int index = (hash & 0x7FFFFFFF) % copyOfEntries.length;
-        for (WeakEntry e = copyOfEntries[index]; e != null; e = e.next) {
-            if (e.key.get() == key) {
-                EntryReference<V> old = e.value;
-                if (key == obj){
-                    e.value = e.key;
-                }else{
-                    e.value = new HardEntryReference<V>(obj);
+        synchronized (entries) {
+            WeakEntry[] copyOfEntries = entries;
+            int hash = System.identityHashCode(key);
+            int index = (hash & 0x7FFFFFFF) % copyOfEntries.length;
+            int limitCounter = 0;
+            for (WeakEntry e = copyOfEntries[index]; e != null; e = e.next) {
+                if (limitCounter++ > 500000) {
+                    throw new IllegalStateException("Esto va a acabar en bucle infinito, lo corto!!" + key + entries);
                 }
-                return old.get();
+                if (e.key.get() == key) {
+                    EntryReference<V> old = e.value;
+                    if (key == obj) {
+                        e.value = e.key;
+                    } else {
+                        e.value = new HardEntryReference<V>(obj);
+                    }
+                    return old.get();
+                }
             }
-        }
 
-        modCount++;
-        if (count >= threshold) {
-            rehash();
-            copyOfEntries = entries;
-            index = (hash & 0x7FFFFFFF) % copyOfEntries.length;
+            modCount++;
+            if (count >= threshold) {
+                rehash();
+                copyOfEntries = entries;
+                index = (hash & 0x7FFFFFFF) % copyOfEntries.length;
+            }
+            WeakEntry<K, V> e = new WeakEntry<K, V>(hash, key, obj, copyOfEntries[index], referenceQueue);
+            copyOfEntries[index] = e;
+            count++;
+            return null;
         }
-        WeakEntry<K,V> e = new WeakEntry<K,V>(hash, key, obj, copyOfEntries[index], referenceQueue);
-        copyOfEntries[index] = e;
-        count++;
-        return null;
     }
 
     /**
@@ -299,50 +309,53 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     public V remove(Object key) {
         if (key == null) return null;
         cleanUp();
-        WeakEntry[] copyOfEntries = entries;
-        int hash = System.identityHashCode(key);
-        int index = (hash & 0x7FFFFFFF) % copyOfEntries.length;
-        for (WeakEntry e = copyOfEntries[index], prev = null; e != null; prev = e, e = e.next) {
-            if (e.key.get() == key) {
-                if (prev != null) {
-                    prev.next = e.next;
-                } else {
-                    copyOfEntries[index] = e.next;
+        synchronized (entries) {
+            WeakEntry[] copyOfEntries = entries;
+            int hash = System.identityHashCode(key);
+            int index = (hash & 0x7FFFFFFF) % copyOfEntries.length;
+            for (WeakEntry e = copyOfEntries[index], prev = null; e != null; prev = e, e = e.next) {
+                if (e.key.get() == key) {
+                    if (prev != null) {
+                        prev.next = e.next;
+                    } else {
+                        copyOfEntries[index] = e.next;
+                    }
+                    count--;
+                    return (V) e.value.get();
                 }
-                count--;
-                return (V)e.value.get();
             }
+            return null;
         }
-        return null;
     }
 
     protected boolean removeEntry(WeakEntry o, boolean userModification) {
-
-        WeakEntry[] copyOfEntries = entries;
-        int index = (o.hash & 0x7FFFFFFF) % copyOfEntries.length;
-        for (WeakEntry e = copyOfEntries[index], prev = null; e != null;
+        synchronized (entries) {
+            WeakEntry[] copyOfEntries = entries;
+            int index = (o.hash & 0x7FFFFFFF) % copyOfEntries.length;
+            for (WeakEntry e = copyOfEntries[index], prev = null; e != null;
                  prev = e, e = e.next) {
-            if (e == o) {
-                // if this method was called as a result of a user action,
-                // increment the modification count
-                // this method is also called by our cleanup code and
-                // that code should not cause a concurrent modification
-                // exception
-                if (userModification){
-                    modCount++;
+                if (e == o) {
+                    // if this method was called as a result of a user action,
+                    // increment the modification count
+                    // this method is also called by our cleanup code and
+                    // that code should not cause a concurrent modification
+                    // exception
+                    if (userModification) {
+                        modCount++;
+                    }
+                    if (prev != null) {
+                        prev.next = e.next;
+                    } else {
+                        copyOfEntries[index] = e.next;
+                    }
+                    count--;
+                    e.value = null;
+                    e.next = null;
+                    return true;
                 }
-                if (prev != null) {
-                    prev.next = e.next;
-                } else {
-                    copyOfEntries[index] = e.next;
-                }
-                count--;
-                e.value = null;
-                e.next = null;
-                return true;
             }
+            return false;
         }
-        return false;
     }
 
     /**
@@ -395,22 +408,24 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
      * @return a shallow copy of this <tt>IdentityWeakHashMap</tt>.
      */
     public Object clone() {
-        try {
-            WeakEntry[] copyOfEntries = entries;
-            IdentityWeakHashMap clone = (IdentityWeakHashMap)super.clone();
-            clone.referenceQueue = new ReferenceQueue();
-            clone.entries = new WeakEntry[copyOfEntries.length];
-            for (int i = copyOfEntries.length; i-- > 0;) {
-                clone.entries[i] = (copyOfEntries[i] != null) ? (WeakEntry)copyOfEntries[i].clone(clone.referenceQueue) : null;
+        synchronized (entries) {
+            try {
+                WeakEntry[] copyOfEntries = entries;
+                IdentityWeakHashMap clone = (IdentityWeakHashMap) super.clone();
+                clone.referenceQueue = new ReferenceQueue();
+                clone.entries = new WeakEntry[copyOfEntries.length];
+                for (int i = copyOfEntries.length; i-- > 0; ) {
+                    clone.entries[i] = (copyOfEntries[i] != null) ? (WeakEntry) copyOfEntries[i].clone(clone.referenceQueue) : null;
+                }
+                clone.keySet = null;
+                clone.entrySet = null;
+                clone.values = null;
+                clone.modCount = 0;
+                return clone;
+            } catch (CloneNotSupportedException e) {
+                // this shouldn't happen, since we are Cloneable
+                throw new InternalError();
             }
-            clone.keySet = null;
-            clone.entrySet = null;
-            clone.values = null;
-            clone.modCount = 0;
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            // this shouldn't happen, since we are Cloneable
-            throw new InternalError();
         }
     }
 

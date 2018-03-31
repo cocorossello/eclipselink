@@ -65,14 +65,16 @@
 
     <!-- Tool version definitions -->
     <property name="gpg.plugin.version"   value="1.4"/>
-    <property name="wagon.http.version"   value="2.4"/>
+    <property name="wagon.http.version"   value="2.12"/>
 
     <!-- The repository info of where maven artifacts will be uploaded -->
     <!--    Override value to change defaults                          -->
-    <property name="stagingId"   value="sonatype-nexus-staging"/>
-    <property name="stagingURL"  value="https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
-    <property name="snapshotId"  value="sonatype-nexus-snapshots"/>
-    <property name="snapshotURL" value="https://oss.sonatype.org/content/repositories/snapshots"/>
+    <property name="stagingId"   value="tr2-maven-repo"/>
+    <property name="stagingURL"  value="http://nexus2.travelcompositor.com/repository/maven-releases"/>
+    <property name="snapshotId"  value="tr2-maven-repo-snapshots"/>
+    <property name="snapshotURL" value="http://nexus2.travelcompositor.com/repository/maven-releases/"/>
+    <property name="repo-user"  value="xxx"/>
+    <property name="repo-password" value="xxx"/>
 
     <target name="upload-maven-all" depends="upload-eclipselink"/>
 
@@ -137,7 +139,7 @@
         <!-- Set maven.version appropriately depending upon ${build.type}.           -->
         <!--    variable should only be used for maven version element in POM.       -->
         <condition property="maven.version" value="${release.version}"
-                   else="${release.version}-${build.type}">
+                   else="${release.version}"><!--!!!!!!!!!!!!!Quito snapshot-->
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
 
@@ -569,8 +571,10 @@
         <artifact:install-provider artifactId="wagon-http" version="${wagon.http.version}"/>
         <!-- Deploy Artifact to repote repo, attach source -->
         <artifact:deploy file="${artifact}">
-          <artifact:remoteRepository id="${snapshotId}" url="${snapshotURL}" />
-          <artifact:pom id="maven.project" file="pom.xml" />
+            <artifact:remoteRepository url="${snapshotURL}">
+                <artifact:authentication username="${repo-user}" password="${repo-password}" />
+            </artifact:remoteRepository>
+            <artifact:pom id="maven.project" file="pom.xml" />
           <artifact:attach file="${artifactSrc}" classifier="sources"/>
         </artifact:deploy>
     </target>
@@ -585,7 +589,9 @@
         <artifact:install-provider artifactId="wagon-http" version="${wagon.http.version}"/>
         <!-- Deploy Artifact to repote repo, attach source and javadoc -->
         <artifact:deploy file="${artifact}">
-          <artifact:remoteRepository id="${snapshotId}" url="${snapshotURL}"/>
+            <artifact:remoteRepository url="${snapshotURL}">
+                <artifact:authentication username="${repo-user}" password="${repo-password}" />
+            </artifact:remoteRepository>
           <artifact:pom id="maven.project" file="pom.xml" />
           <artifact:attach file="${artifactSrc}"     type="jar" classifier="sources"/>
           <artifact:attach file="${artifactJavadoc}" type="zip" classifier="javadoc"/>

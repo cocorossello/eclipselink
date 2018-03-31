@@ -192,28 +192,29 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
         if (obj == null) {
             throw new NullPointerException();
         }
-
-        // Makes sure the object is not already in the IdentityHashSet.
-        Entry[] copyOfEntries = entries;
-        int hash = System.identityHashCode(obj);
-        int index = (hash & 0x7FFFFFFF) % copyOfEntries.length;
-        for (Entry e = copyOfEntries[index]; e != null; e = e.next) {
-            if ((e.hash == hash) && (obj == e.value)) {
-                return false;
+        synchronized (entries) {
+            // Makes sure the object is not already in the IdentityHashSet.
+            Entry[] copyOfEntries = entries;
+            int hash = System.identityHashCode(obj);
+            int index = (hash & 0x7FFFFFFF) % copyOfEntries.length;
+            for (Entry e = copyOfEntries[index]; e != null; e = e.next) {
+                if ((e.hash == hash) && (obj == e.value)) {
+                    return false;
+                }
             }
-        }
 
-        if (count >= threshold) {
-            // Rehash the table if the threshold is exceeded
-            rehash();
-            copyOfEntries = entries;
-            index = (hash & 0x7FFFFFFF) % copyOfEntries.length;
-        }
+            if (count >= threshold) {
+                // Rehash the table if the threshold is exceeded
+                rehash();
+                copyOfEntries = entries;
+                index = (hash & 0x7FFFFFFF) % copyOfEntries.length;
+            }
 
-        // Creates the new entry.
-        Entry e = new Entry(hash, obj, copyOfEntries[index]);
-        copyOfEntries[index] = e;
-        count++;
+            // Creates the new entry.
+            Entry e = new Entry(hash, obj, copyOfEntries[index]);
+            copyOfEntries[index] = e;
+            count++;
+        }
         return true;
     }
 

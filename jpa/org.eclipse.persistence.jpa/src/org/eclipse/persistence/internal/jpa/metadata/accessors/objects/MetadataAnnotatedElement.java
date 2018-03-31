@@ -212,9 +212,11 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
         MetadataAnnotation metadataAnnotation = m_annotations.get(annotation);
         if (metadataAnnotation == null) {
             for (MetadataAnnotation a: m_metaAnnotations.values()) {
-                MetadataAnnotation ma = m_factory.getMetadataClass(a.getName()).getAnnotation(annotation);
-                if (ma != null) {
-                    return ma;
+                if (!a.getName().contains("kotlin")) {
+                    MetadataAnnotation ma = m_factory.getMetadataClass(a.getName()).getAnnotation(annotation);
+                    if (ma != null) {
+                        return ma;
+                    }
                 }
             }
         }
