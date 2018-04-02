@@ -3380,8 +3380,17 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if (! getQueryMechanism().isExpressionQueryMechanism()){
             throw QueryException.batchReadingNotSupported(this);
         }
-        getBatchReadAttributeExpressions().add(attributeExpression);
-        setIsPrepared(false);
+        List<Expression> batchExpressions = getBatchReadAttributeExpressions();
+        boolean prepared = true;
+        synchronized (batchExpressions) {
+            if (!batchExpressions.contains(attributeExpression)) {
+                batchExpressions.add(attributeExpression);
+                prepared = false;
+            }
+        }
+        if (!prepared) {
+            setIsPrepared(false);
+        }
     }
 
     /**

@@ -930,38 +930,43 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             batchQuery.setDistinctState(query.getDistinctState());
         }
 
-        // Add batch reading attributes contained in the mapping's query.
-        ReadQuery mappingQuery = this.selectionQuery;
-        if (mappingQuery.isReadAllQuery()) {
-            // CR#3238 clone these vectors so they will not grow with each call to the query. -TW
-            batchQuery.setOrderByExpressions(new ArrayList<Expression>(((ReadAllQuery)mappingQuery).getOrderByExpressions()));
-            if (((ReadAllQuery)mappingQuery).hasBatchReadAttributes()) {
-                for (Expression expression : ((ReadAllQuery)mappingQuery).getBatchReadAttributeExpressions()) {
-                    batchQuery.addBatchReadAttribute(expression);
-                }
-            }
-        }
+        synchronized (query) {
 
-        // Bug 385700 - Populate session & query class if not initialized by
-        // ObjectLevelReadQuery.computeBatchReadMappingQueries() in case batch query
-        // has been using inheritance and child descriptors can have different mappings.
-        if (query.hasBatchReadAttributes()) {
-            for (Expression expression : query.getBatchReadAttributeExpressions()) {
-                ObjectExpression batchReadExpression = (ObjectExpression) expression;
-
-                // Batch Read Attribute Expressions may not have initialized.
-                ExpressionBuilder expressionBuilder = batchReadExpression.getBuilder();
-                if (expressionBuilder.getQueryClass() == null) {
-                    expressionBuilder.setQueryClass(query.getReferenceClass());
-                }
-                if (expressionBuilder.getSession() == null) {
-                    expressionBuilder.setSession(query.getSession().getRootSession(null));
+            // Add batch reading attributes contained in the mapping's query.
+            ReadQuery mappingQuery = this.selectionQuery;
+            synchronized (mappingQuery) {
+                if (mappingQuery.isReadAllQuery()) {
+                    // CR#3238 clone these vectors so they will not grow with each call to the query. -TW
+                    batchQuery.setOrderByExpressions(new ArrayList<Expression>(((ReadAllQuery) mappingQuery).getOrderByExpressions()));
+                    if (((ReadAllQuery) mappingQuery).hasBatchReadAttributes()) {
+                        for (Expression expression : ((ReadAllQuery) mappingQuery).getBatchReadAttributeExpressions()) {
+                            batchQuery.addBatchReadAttribute(expression);
+                        }
+                    }
                 }
             }
 
-            // Computed nested batch attribute expressions, and add them to batch query.
-            List<Expression> nestedExpressions = extractNestedExpressions(query.getBatchReadAttributeExpressions(), batchQuery.getExpressionBuilder());
-            batchQuery.getBatchReadAttributeExpressions().addAll(nestedExpressions);
+            // Bug 385700 - Populate session & query class if not initialized by
+            // ObjectLevelReadQuery.computeBatchReadMappingQueries() in case batch query
+            // has been using inheritance and child descriptors can have different mappings.
+            if (query.hasBatchReadAttributes()) {
+                for (Expression expression : query.getBatchReadAttributeExpressions()) {
+                    ObjectExpression batchReadExpression = (ObjectExpression) expression;
+
+                    // Batch Read Attribute Expressions may not have initialized.
+                    ExpressionBuilder expressionBuilder = batchReadExpression.getBuilder();
+                    if (expressionBuilder.getQueryClass() == null) {
+                        expressionBuilder.setQueryClass(query.getReferenceClass());
+                    }
+                    if (expressionBuilder.getSession() == null) {
+                        expressionBuilder.setSession(query.getSession().getRootSession(null));
+                    }
+                }
+
+                // Computed nested batch attribute expressions, and add them to batch query.
+                List<Expression> nestedExpressions = extractNestedExpressions(query.getBatchReadAttributeExpressions(), batchQuery.getExpressionBuilder());
+                batchQuery.getBatchReadAttributeExpressions().addAll(nestedExpressions);
+            }
         }
 
         batchQuery.setBatchFetchType(batchType);
