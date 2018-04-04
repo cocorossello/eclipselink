@@ -19,6 +19,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.weaving;
 
+import java.lang.reflect.Modifier;
 import java.util.Iterator;
 
 import org.eclipse.persistence.internal.helper.Helper;
@@ -157,7 +158,11 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
             final String signature,
             final Object value) {
         if (cv != null) {
-            return cv.visitField(access & (~Opcodes.ACC_FINAL), name, descriptor, signature, value);
+            int newAccess = access;
+            if (!Modifier.isStatic(access) && Modifier.isFinal(access)) {
+                newAccess = access & (~Opcodes.ACC_FINAL);
+            }
+            return cv.visitField(newAccess, name, descriptor, signature, value);
         }
         return null;
     }

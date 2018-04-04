@@ -27,7 +27,7 @@ quitar javax y poner jpa 2.2 api
  uploadToNexus.xml :
  Poner el repo-user y repo-password
  
-ant -f uploadToNexus.xml -Drelease.version=2.7.0.TRAVELC.26 -Dbuild.type=SNAPSHOT -Dgit.hash=32adsalksdfjfsdao123213
+ant -f uploadToNexus.xml -Drelease.version=2.7.0.TRAVELC.27 -Dbuild.type=SNAPSHOT -Dgit.hash=32adsalksdfjfsdao123213
 
 
  coger de lib el maven-ant-tasks.jar y ponerlo en ANT_HOME/lib
