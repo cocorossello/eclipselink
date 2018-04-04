@@ -148,6 +148,20 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
         return null;
     }
 
+
+    @Override
+    public FieldVisitor visitField(
+            final int access,
+            final String name,
+            final String descriptor,
+            final String signature,
+            final Object value) {
+        if (cv != null) {
+            return cv.visitField(access & (~Opcodes.ACC_FINAL), name, descriptor, signature, value);
+        }
+        return null;
+    }
+
     /**
      * Used for primitive conversion. Returns the name conversion method for the
      * given type.
