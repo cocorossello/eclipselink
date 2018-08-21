@@ -1,27 +1,30 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle, Hans Harz, Andrew Rustleund, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Hans Harz, Andrew Rustleund, IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     James Sutherland - initial impl
- *     05/14/2010-2.1 Guy Pelletier
- *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
- *     Hans Harz, Andrew Rustleund - Bug 324862 - IndexOutOfBoundsException in
- *           DatabaseSessionImpl.initializeDescriptors because @MapKey Annotation is not found.
- *     04/21/2011-2.3 dclarke: Upgraded to support ASM 3.3.1
- *     08/10/2011-2.3 Lloyd Fernandes : Bug 336133 - Validation error during processing on parameterized generic OneToMany Entity relationship from MappedSuperclass
- *     10/05/2012-2.4.1 Guy Pelletier
- *       - 373092: Exceptions using generics, embedded key and entity inheritance
- *     19/04/2014-2.6 Lukas Jungmann
- *       - 429992: JavaSE 8/ASM 5.0.1 support (EclipseLink silently ignores Entity classes with lambda expressions)
- *     11/05/2015-2.6 Dalia Abo Sheasha
- *       - 480787 : Wrap several privileged method calls with a doPrivileged block
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     James Sutherland - initial impl
+//     05/14/2010-2.1 Guy Pelletier
+//       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
+//     Hans Harz, Andrew Rustleund - Bug 324862 - IndexOutOfBoundsException in
+//           DatabaseSessionImpl.initializeDescriptors because @MapKey Annotation is not found.
+//     04/21/2011-2.3 dclarke: Upgraded to support ASM 3.3.1
+//     08/10/2011-2.3 Lloyd Fernandes : Bug 336133 - Validation error during processing on parameterized generic OneToMany Entity relationship from MappedSuperclass
+//     10/05/2012-2.4.1 Guy Pelletier
+//       - 373092: Exceptions using generics, embedded key and entity inheritance
+//     19/04/2014-2.6 Lukas Jungmann
+//       - 429992: JavaSE 8/ASM 5.0.1 support (EclipseLink silently ignores Entity classes with lambda expressions)
+//     11/05/2015-2.6 Dalia Abo Sheasha
+//       - 480787 : Wrap several privileged method calls with a doPrivileged block
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
 import java.io.IOException;
@@ -38,11 +41,17 @@ import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
 import org.eclipse.persistence.internal.libraries.asm.ClassReader;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkClassReader;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.logging.SessionLogEntry;
 
 /**
  * INTERNAL: A metadata factory that uses ASM technology and no reflection
@@ -97,30 +106,41 @@ public class MetadataAsmFactory extends MetadataFactory {
             ClassReader reader = new ClassReader(stream);
             Attribute[] attributes = new Attribute[0];
             reader.accept(visitor, attributes, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-        } catch (Exception exception) {
-            // Some basic types can't be found, so can just be registered
-            // (i.e. arrays). Also, VIRTUAL classes may also not exist,
-            // therefore, tag the MetadataClass as loadable false. This will be
-            // used to determine if a class will be dynamically created or not.
-            metadataClass = new MetadataClass(this, className, false);
-            // If the class is a JDK class, then maybe there is a class loader issues,
-            // since it is a JDK class, just use reflection.
-            if ((className.length() > 5) && className.substring(0, 5).equals("java.")) {
+        } catch (IllegalArgumentException iae) {
+            // class was probably compiled with some newer than officially
+            // supported and tested JDK
+            // in such case log a warning and try to re-read the class
+            // without class version check
+            SessionLog log = getLogger().getSession() != null
+                    ? getLogger().getSession().getSessionLog() : AbstractSessionLog.getLog();
+            if (log.shouldLog(SessionLog.SEVERE, SessionLog.METADATA)) {
+                SessionLogEntry entry = new SessionLogEntry(getLogger().getSession(), SessionLog.SEVERE, SessionLog.METADATA, iae);
+                entry.setMessage(ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] { className }));
+                log.log(entry);
+            }
+            if (stream != null) {
                 try {
-                    Class reflectClass = Class.forName(className);
-                    if (reflectClass.getSuperclass() != null) {
-                        metadataClass.setSuperclassName(reflectClass.getSuperclass().getName());
+                    ClassReader reader = new EclipseLinkClassReader(stream);
+                    Attribute[] attributes = new Attribute[0];
+                    reader.accept(visitor, attributes, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+                } catch (Exception e) {
+                    if (log.shouldLog(SessionLog.SEVERE, SessionLog.METADATA)) {
+                        SessionLogEntry entry = new SessionLogEntry(getLogger().getSession(), SessionLog.SEVERE, SessionLog.METADATA, e);
+                        entry.setMessage(ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] { className }));
+                        log.log(entry);
                     }
-                    for (Class reflectInterface : reflectClass.getInterfaces()) {
-                        metadataClass.addInterface(reflectInterface.getName());
-                    }
-                } catch (Exception failed) {
-                    metadataClass.setIsAccessible(false);
+                    addMetadataClass(getVirtualMetadataClass(className));
                 }
             } else {
-                metadataClass.setIsAccessible(false);
+                addMetadataClass(getVirtualMetadataClass(className));
             }
-            addMetadataClass(metadataClass);
+        } catch (Exception exception) {
+            SessionLog log = getLogger().getSession() != null
+                    ? getLogger().getSession().getSessionLog() : AbstractSessionLog.getLog();
+            if (log.shouldLog(SessionLog.FINEST, SessionLog.METADATA)) {
+                log.logThrowable(SessionLog.FINEST, SessionLog.METADATA, exception);
+            }
+            addMetadataClass(getVirtualMetadataClass(className));
         } finally {
             try {
                 if (stream != null) {
@@ -269,6 +289,10 @@ public class MetadataAsmFactory extends MetadataFactory {
         @Override
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
             boolean isJPA = false;
+            if (desc.startsWith("Lkotlin")) {
+                //ignore kotlin annotations
+                return null;
+            }
             if (desc.startsWith("Ljava")) {
                 char c = desc.charAt(5);
                 //ignore annotations from 'java' namespace
@@ -497,6 +521,43 @@ public class MetadataAsmFactory extends MetadataFactory {
             }
         }
 
+    }
+
+    /**
+     * Get MetadataClass for a class which can not be found
+     * @param className class which has not been found
+     * @return MetadataClass
+     */
+    private MetadataClass getVirtualMetadataClass(String className) {
+        // Some basic types can't be found, so can just be registered
+        // (i.e. arrays). Also, VIRTUAL classes may also not exist,
+        // therefore, tag the MetadataClass as loadable false. This will be
+        // used to determine if a class will be dynamically created or not.
+        MetadataClass metadataClass = new MetadataClass(this, className, false);
+        // If the class is a JDK class, then maybe there is a class loader
+        // issues,
+        // since it is a JDK class, just use reflection.
+        if ((className.length() > 5) && className.substring(0, 5).equals("java.")) {
+            try {
+                Class reflectClass = Class.forName(className);
+                if (reflectClass.getSuperclass() != null) {
+                    metadataClass.setSuperclassName(reflectClass.getSuperclass().getName());
+                }
+                for (Class reflectInterface : reflectClass.getInterfaces()) {
+                    metadataClass.addInterface(reflectInterface.getName());
+                }
+            } catch (Exception failed) {
+                SessionLog log = getLogger().getSession() != null
+                        ? getLogger().getSession().getSessionLog() : AbstractSessionLog.getLog();
+                if (log.shouldLog(SessionLog.FINE, SessionLog.METADATA)) {
+                    log.logThrowable(SessionLog.FINE, SessionLog.METADATA, failed);
+                }
+                metadataClass.setIsAccessible(false);
+            }
+        } else {
+            metadataClass.setIsAccessible(false);
+        }
+        return metadataClass;
     }
 
     /**
