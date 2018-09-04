@@ -82,8 +82,8 @@
     <property name="stagingURL"  value="http://nexus2.travelcompositor.com/repository/maven-releases"/>
     <property name="snapshotId"  value="tr2-maven-repo-snapshots"/>
     <property name="snapshotURL" value="http://nexus2.travelcompositor.com/repository/maven-releases/"/>
-    <property name="repo-user"  value="xxx"/>
-    <property name="repo-password" value="xxx"/>
+    <property name="repo-user"  value="admin"/>
+    <property name="repo-password" value="admin123"/>
 
     <target name="upload-maven-all" depends="upload-eclipselink"/>
 
