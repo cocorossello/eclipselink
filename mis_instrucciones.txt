@@ -21,7 +21,7 @@ jaxb
 xr
 
 
-quitar javax y poner jpa 2.2 api
+quitar javax y poner jpa 2.2 api --- NO PONGO SPEC
  
  
  uploadToNexus.xml :
