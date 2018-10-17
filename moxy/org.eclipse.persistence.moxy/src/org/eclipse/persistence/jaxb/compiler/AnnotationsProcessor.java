@@ -860,8 +860,8 @@ public final class AnnotationsProcessor {
 
             // handle superclass if necessary
             JavaClass superClass = javaClass.getSuperclass();
-            processReferencedClass(superClass);
             processPropertiesSuperClass(javaClass, info);
+            processReferencedClass(superClass);
 
             // add properties
             info.setProperties(getPropertiesForClass(javaClass, info));
@@ -1108,7 +1108,7 @@ public final class AnnotationsProcessor {
             }
             // if the property is an XmlIDREF, the target must have an
             // XmlID set
-            if (targetInfo != null && targetInfo.getIDProperty() == null) {
+            if (targetInfo != null && targetInfo.getIDProperty() == null && !preCheckXmlID(typeClass, targetInfo)) {
                 throw JAXBException.invalidIdRef(property.getPropertyName(), typeClass.getQualifiedName());
             }
         }
@@ -2429,7 +2429,7 @@ public final class AnnotationsProcessor {
                 TypeInfo tInfo = typeInfos.get(next.getType());
 
 
-                if (tInfo == null || !tInfo.isIDSet()) {
+                if (tInfo == null || (!tInfo.isIDSet() && !preCheckXmlID(nextCls, tInfo))) {
                     throw JAXBException.invalidXmlElementInXmlElementsList(propertyName, name);
                 }
             }
@@ -2487,6 +2487,33 @@ public final class AnnotationsProcessor {
             }
         }
         choiceProperty.setChoiceProperties(choiceProperties);
+    }
+
+    /**
+     * Check if class with specified non complete type info has @XmlID field.
+     * Can update type info. Used in case when annotation processor analyze
+     * inheritance (parent classes) and from parent class is reverse reference
+     * via @XmlIDREF, @XmlPaths and @XmlElements to the some child classes.
+     * In this phase type info is not complete (missing properties).
+     * @param javaClass
+     * @param typeInfo
+     * @return
+     */
+    private boolean preCheckXmlID(JavaClass javaClass, TypeInfo typeInfo) {
+        ArrayList<Property> properties = getPropertiesForClass(javaClass, typeInfo);
+        for (Property property : properties) {
+            // check @XmlID
+            if (helper.isAnnotationPresent(property.getElement(), XmlID.class)) {
+                return true;
+            }
+        }
+        if (typeInfos.get(javaClass.getSuperclass().getQualifiedName()).isIDSet()) {
+            if (typeInfo.getIDProperty() == null) {
+                typeInfo.setIDProperty(typeInfos.get(javaClass.getSuperclass().getQualifiedName()).getIDProperty());
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -4263,7 +4290,7 @@ public final class AnnotationsProcessor {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
         String sig = "Lorg/eclipse/persistence/internal/jaxb/many/MapValue<L" + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;>;";
-        cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "org/eclipse/persistence/internal/jaxb/many/MapValue", null);
+        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "org/eclipse/persistence/internal/jaxb/many/MapValue", null);
 
         // Write Field: @... public Map entry
         String fieldSig = L + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;";
@@ -4574,9 +4601,9 @@ public final class AnnotationsProcessor {
         String componentClassNameSeparatedBySlash = getObjectType(componentType).getQualifiedName().replace(DOT_CHR, SLASH_CHR);
         String containerClassNameSeperatedBySlash = containerType.getQualifiedName().replace(DOT_CHR, SLASH_CHR);
         if("[B".equals(componentClassNameSeparatedBySlash)) {
-            cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameSeparatedBySlash, "L" + Type.getInternalName(superType) + "<" + componentClassNameSeparatedBySlash + ">;", Type.getInternalName(superType), null);
+            cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameSeparatedBySlash, "L" + Type.getInternalName(superType) + "<" + componentClassNameSeparatedBySlash + ">;", Type.getInternalName(superType), null);
         } else {
-            cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameSeparatedBySlash, "L" + Type.getInternalName(superType) + "<L" + componentClassNameSeparatedBySlash + ";>;", Type.getInternalName(superType), null);
+            cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameSeparatedBySlash, "L" + Type.getInternalName(superType) + "<L" + componentClassNameSeparatedBySlash + ";>;", Type.getInternalName(superType), null);
         }
 
         // Write @XmlType(namespace)

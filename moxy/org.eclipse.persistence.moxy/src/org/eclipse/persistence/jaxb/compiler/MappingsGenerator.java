@@ -125,6 +125,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransforme
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.FixedMimeTypePolicy;
@@ -1978,7 +1979,7 @@ public class MappingsGenerator {
         }
 
         String sig = "Ljava/lang/Object;Lorg/eclipse/persistence/internal/jaxb/many/MapEntry<L"+qualifiedInternalKeyClassName+";" + valuePrefix + qualifiedInternalValueClassName+";>;";
-        cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "java/lang/Object", new String[] { "org/eclipse/persistence/internal/jaxb/many/MapEntry" });
+        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "java/lang/Object", new String[] { "org/eclipse/persistence/internal/jaxb/many/MapEntry" });
 
         cw.visitField(Opcodes.ACC_PRIVATE, "key", "L"+qualifiedInternalKeyClassName+";", null, null);
 
@@ -2427,7 +2428,7 @@ public class MappingsGenerator {
                 if (rootTypeInfo.isSetXmlDiscriminatorNode()) {
                     classIndicatorField = new XMLField(rootTypeInfo.getXmlDiscriminatorNode());
                 } else {
-                    classIndicatorField = new XMLField(ATT + "type");
+                    classIndicatorField = XMLConstants.DEFAULT_XML_TYPE_ATTRIBUTE;
                     classIndicatorField.getXPathFragment().setNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
                 }
                 rootDescriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);
@@ -3263,7 +3264,7 @@ public class MappingsGenerator {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
         String sig = null;
-        cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, className.replace(".", "/"), sig, Type.getType(WrappedValue.class).getInternalName(), null);
+        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, className.replace(".", "/"), sig, Type.getType(WrappedValue.class).getInternalName(), null);
 
         String fieldType = null;
         if(isList){
