@@ -27,6 +27,7 @@ import java.security.PrivilegedAction;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -117,13 +118,9 @@ public class BeanValidationListener extends DescriptorEventAdapter {
                 // Throw a ConstrainViolationException as required by the spec.
                 // The transaction would be rolled back automatically
                 throw new ConstraintViolationException(
-<<<<<<< HEAD
+
                         "Bean Validation constraint(s) violated on callback event:'" +
                                 callbackEventName + "'. Errors: " + getPrettyMessage(constraintViolations),
-=======
-                        ExceptionLocalization.buildMessage("bean_validation_constraint_violated",
-                                new Object[]{callbackEventName, source.getClass().getName()}),
->>>>>>> 6bdbb0ec3e1cfee6b1d801f12a479b7daef24e77
                         (Set<ConstraintViolation<?>>) (Object) constraintViolations); /* Do not remove the explicit
                         cast. This issue is related to capture#a not being instance of capture#b. */
             }
