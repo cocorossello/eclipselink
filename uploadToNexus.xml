@@ -76,6 +76,7 @@
     <property name="gpg.plugin.version"   value="1.4"/>
     <property name="wagon.http.version"   value="2.12"/>
 
+
     <!-- The repository info of where maven artifacts will be uploaded -->
     <!--    Override value to change defaults                          -->
     <property name="stagingId"   value="tr2-maven-repo"/>
@@ -171,19 +172,9 @@
     </target>
 
     <target name="discover-static-built-info" depends="init">
-        <property name="jpaapi.prefix"        value="javax.persistence"/>
-        <property name="jpaapi.criteria"      value="[2.0.100, 3.0.0)"/>
-        <property name="jpaapi.name"          value="Javax Persistence"/>
         <property name="sdoapi.prefix"        value="commonj.sdo"/>
         <property name="sdoapi.criteria"      value="[2.1.1,2.2.0)"/>
         <property name="sdoapi.name"          value="SDO API"/>
-        <property name="validation.prefix"    value="validation-api"/>
-        <property name="validation.criteria"  value="[1.1.0,2.2.0)"/>
-        <property name="validation.name"      value="Javax Validation"/>
-        <property name="json.prefix"          value="javax.json-api"/>
-        <property name="json.criteria"        value="[1.1.0,5.0.0)"/>
-        <property name="json.name"            value="Javax JSON"/>
-        <property name="json.version"         value="1.1.2"/>
         <property name="antlr.prefix"         value="org.eclipse.persistence.antlr"/>
         <property name="antlr.criteria"       value="[3.0.0,4.0.0)"/>
         <property name="antlr.name"           value="EclipseLink ANTLR"/>
@@ -206,17 +197,8 @@
         <property name="extension.criteria"   value="[1.0.0,9.0.0)"/>
         <property name="extension.name"       value="EclipseLink Extensions"/>
 
-        <selectbundle basename="${jpaapi.prefix}"  directory="${maven.2.jpa.plugins.dir}"
-                      criterion="${jpaapi.criteria}" property="jpaapi.version" versiononly="true"
-                />
         <selectbundle basename="${sdoapi.prefix}"  directory="${maven.2.sdo.plugins.dir}"
                       criterion="${sdoapi.criteria}" property="sdoapi.version" versiononly="true"
-                />
-        <selectbundle basename="javax.validation.api"  directory="${maven.2.common.plugins.dir}"
-                      criterion="${validation.criteria}" property="validation.version" versiononly="true"
-                />
-        <selectbundle basename="${json.prefix}"  directory="${maven.2.common.plugins.dir}"
-                      criterion="${json.criteria}" property="json.version" versiononly="true"
                 />
         <selectbundle basename="${antlr.prefix}"  directory="${maven.2.common.plugins.dir}"
                       criterion="${antlr.criteria}" property="antlr.version" versiononly="true"
@@ -240,10 +222,7 @@
                       criterion="${extension.criteria}" property="extension.version" versiononly="true"
         />
 
-        <echo message="jpaapi.version     = ${jpaapi.version}"/>
         <echo message="sdoapi.version     = ${sdoapi.version}"/>
-        <echo message="validation.version = ${validation.version}"/>
-        <echo message="json.version       = ${json.version}"/>
         <echo message="antlr.version      = ${antlr.version}"/>
         <echo message="asm.version        = ${asm.version}"/>
         <echo message="oracleddl.version  = ${oracleddl.version}"/>
@@ -255,7 +234,6 @@
         <!-- Maven standards state we should publish with a stripped down 3-part version rather -->
         <!-- than the 4-part OSGi version. So we need to generate "(bundle).mvn.version" from   -->
         <!-- the discovered "(bundle).version" (after release) -->
-        <stripQualifier input="${jpaapi.version}"      property="jpaapi.mvn.version"/>
         <!-- However, if the bundle versioning is such that only the qualifier will change on   -->
         <!-- a rebuild (convenient for publishing OSGi-ified jars but against OSGi spec) then   -->
         <!-- we will either violate Maven's "once published, never changes" rule, or newer      -->
@@ -275,6 +253,21 @@
         <!--      publishing they will be published under the EclipseLink build version        -->
         <!--   In addition, in all these listed cases, the artifacts are EclipseLink specific, -->
         <!--   and won't be available separately anyway.                                       -->
+
+        <!-- since JPA API is treated as 3rd party dependency, we have to look up it's version -->
+        <!-- in the dependency management section of appropriate pom                           -->
+        <loadfile
+            encoding="UTF-8"
+            property="jpaapi.mvn.version"
+            srcFile="${maven.2.buildsys.dir}/compdeps/pom.xml" >
+                <filterchain>
+                    <tokenfilter>
+                        <containsregex
+                            pattern="&lt;jakarta.persistence.version&gt;(.*)&lt;/jakarta.persistence.version&gt;$"
+                            replace="\1" />
+                    </tokenfilter>
+                </filterchain>
+        </loadfile>
 
         <say  message="jpaapi.mvn.version = ${jpaapi.mvn.version}"      if="jpaapi.mvn.version"/>
         <say  message="sdoapi.mvn.version = ${sdoapi.mvn.version}"      if="sdoapi.mvn.version"/>
@@ -300,16 +293,13 @@
         <!-- These use above, in order, to define a single library for an artifact dependency -->
         <!-- Public APIs we depend upon that can be found on Maven Central -->
         <!-- Add as nosql dependency -->
-        <property name="dep.resource"      value="${dep.grp}javax.resource${dep.art}connector-api${dep.ver}1.5${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.servlet"       value="${dep.grp}javax.servlet${dep.art}servlet-api${dep.ver}2.4${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.resource"      value="${dep.grp}jakarta.resource${dep.art}jakarta.resource-api${dep.ver}1.7.2${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.servlet"       value="${dep.grp}jakarta.servlet${dep.art}jakarta.servlet-api${dep.ver}4.0.2${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.wsdl"          value="${dep.grp}wsdl4j${dep.art}wsdl4j${dep.ver}1.6.3${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- These are EclipseLink maintained public API bundles so are published under the EclipseLink GroupID, but with their own version info -->
         <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}${jpaapi.prefix}${dep.ver}${jpaapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdoapi"        value="${dep.grp}org.eclipse.persistence${dep.art}${sdoapi.prefix}${dep.ver}${sdoapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- APIs that are not EclipseLink's maintained public API bundles but are to be included in EclipseLink pom.xml.  -->
-        <property name="dep.validation"
-                  value="${dep.grp}javax.validation${dep.art}${validation.prefix}${dep.ver}${validation.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.json"          value="${dep.grp}javax.json${dep.art}${json.prefix}${dep.ver}${json.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- These are EclipseLink jars so will be versioned with the build -->
         <property name="dep.antlr"         value="${dep.grp}org.eclipse.persistence${dep.art}${antlr.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.asm"           value="${dep.grp}org.eclipse.persistence${dep.art}${asm.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
@@ -329,18 +319,18 @@
         <!--   canonical modelgen processor during compilation. It has no real dependencies, nor is anything really       -->
         <!--   dependant upon it, but it is needed for this compiler functionality to work. (think of it as a compiler    -->
         <!--   add-on). It will need to be downloaded independently for this feature (modelgen) to work.                  -->
-        <property name="eclipselink.dependencies" value="${deps.head}${dep.persistence}${dep.sdoapi}${dep.validation}${dep.json}${deps.foot}"/>
+        <property name="eclipselink.dependencies" value="${deps.head}${dep.persistence}${dep.sdoapi}${deps.foot}"/>
         <!-- would need the modelgen.jar for modelgen but cannot include dep -->
         <property name="jpql.dependencies"        value="${deps.head}${dep.hermes}${deps.foot}"/>
-        <property name="core.dependencies"        value="${deps.head}${dep.asm}${dep.json}${deps.foot}"/>
+        <property name="core.dependencies"        value="${deps.head}${dep.asm}${deps.foot}"/>
         <property name="oracle.dependencies"      value="${deps.head}${dep.persistence}${dep.asm}${dep.core}${deps.foot}"/>
-        <property name="jpa.dependencies"         value="${deps.head}${dep.persistence}${dep.asm}${dep.antlr}${dep.json}${dep.hermes}${dep.core}${deps.foot}"/>
+        <property name="jpa.dependencies"         value="${deps.head}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${deps.foot}"/>
         <property name="nosql.dependencies"       value="${deps.head}${dep.resource}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${deps.foot}"/>
         <property name="ora.nosql.dependencies"   value="${deps.head}${dep.nosql}${deps.foot}"/>
         <property name="modelgen.dependencies"    value="${deps.head}${dep.core}${dep.jpa}${deps.foot}"/>
         <property name="dbws.dependencies"        value="${deps.head}${dep.core}${deps.foot}"/>
         <property name="builder.dependencies"     value="${deps.head}${dep.core}${dep.dbws}${dep.moxy}${dep.jpa}${dep.nosql}${dep.oracle}${dep.servlet}${dep.wsdl}${dep.oracleddl}${deps.foot}"/>
-        <property name="moxy.dependencies"        value="${deps.head}${dep.core}${dep.validation}${dep.json}${deps.foot}"/>
+        <property name="moxy.dependencies"        value="${deps.head}${dep.core}${deps.foot}"/>
         <property name="sdo.dependencies"         value="${deps.head}${dep.sdoapi}${dep.moxy}${dep.core}${deps.foot}"/>
         <property name="extension.dependencies"   value="${deps.head}${dep.core}${deps.foot}"/>
     </target>
