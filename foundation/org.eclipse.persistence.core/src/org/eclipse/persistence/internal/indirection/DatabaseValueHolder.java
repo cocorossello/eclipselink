@@ -88,17 +88,13 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      */
     @Override
     public Object getValue() {
-        boolean instantiated = this.isInstantiated;
-        if (!instantiated) {
-            synchronized (this) {
-                instantiated = this.isInstantiated;
-                if (!instantiated) {
-                    // The value must be set directly because the setValue can also cause instantiation under UOW.
-                    privilegedSetValue(instantiate());
-                    this.isInstantiated = true;
-                    postInstantiate();
-                    resetFields();
-                }
+        synchronized (this) {
+            if (!this.isInstantiated) {
+                // The value must be set directly because the setValue can also cause instantiation under UOW.
+                privilegedSetValue(instantiate());
+                this.isInstantiated = true;
+                postInstantiate();
+                resetFields();
             }
         }
         return value;
