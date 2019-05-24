@@ -80,11 +80,11 @@
     <!-- The repository info of where maven artifacts will be uploaded -->
     <!--    Override value to change defaults                          -->
     <property name="stagingId"   value="tr2-maven-repo"/>
-    <property name="stagingURL"  value="http://nexus2.travelcompositor.com/repository/maven-releases"/>
+    <property name="stagingURL"  value="http://nexus.travelcompositor.com/repository/maven-releases"/>
     <property name="snapshotId"  value="tr2-maven-repo-snapshots"/>
-    <property name="snapshotURL" value="http://nexus2.travelcompositor.com/repository/maven-releases/"/>
+    <property name="snapshotURL" value="http://nexus.travelcompositor.com/repository/maven-releases/"/>
     <property name="repo-user"  value="admin"/>
-    <property name="repo-password" value="admin123"/>
+    <property name="repo-password" value="xxx"/>
 
     <target name="upload-maven-all" depends="upload-eclipselink"/>
 
