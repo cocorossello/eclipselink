@@ -1,7 +1,7 @@
 ﻿
 
-set JAVA_HOME=d:\tools\jdk8u212-b03
-set M2_HOME=d:\tools\apache-maven-3.5.4-bin
+set JAVA_HOME=C:\Program Files\java\jdk1.8.0_201
+set M2_HOME=c:\tools\apache-maven-3.5.2-bin\apache-maven-3.5.2
 ant -f antbuild.xml -Djunit.lib=C:\Users\Usuario\.gradle\caches\modules-2\files-2.1\junit\junit\4.12\2973d150c0dc1fefe998f834810d68f278ea58ec\junit-4.12.jar clean build-distribution
 
 Del eclipselink.jar de la raiz:

@@ -153,10 +153,10 @@ public class ClassNode extends ClassVisitor {
    */
   public ClassNode(final int api) {
     super(api);
-    this.interfaces = new ArrayList<String>();
-    this.innerClasses = new ArrayList<InnerClassNode>();
-    this.fields = new ArrayList<FieldNode>();
-    this.methods = new ArrayList<MethodNode>();
+    this.interfaces = new ArrayList<>();
+    this.innerClasses = new ArrayList<>();
+    this.fields = new ArrayList<>();
+    this.methods = new ArrayList<>();
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -207,15 +207,9 @@ public class ClassNode extends ClassVisitor {
   public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
     AnnotationNode annotation = new AnnotationNode(descriptor);
     if (visible) {
-      if (visibleAnnotations == null) {
-        visibleAnnotations = new ArrayList<AnnotationNode>(1);
-      }
-      visibleAnnotations.add(annotation);
+      visibleAnnotations = Util.add(visibleAnnotations, annotation);
     } else {
-      if (invisibleAnnotations == null) {
-        invisibleAnnotations = new ArrayList<AnnotationNode>(1);
-      }
-      invisibleAnnotations.add(annotation);
+      invisibleAnnotations = Util.add(invisibleAnnotations, annotation);
     }
     return annotation;
   }
@@ -225,33 +219,21 @@ public class ClassNode extends ClassVisitor {
       final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
     TypeAnnotationNode typeAnnotation = new TypeAnnotationNode(typeRef, typePath, descriptor);
     if (visible) {
-      if (visibleTypeAnnotations == null) {
-        visibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(1);
-      }
-      visibleTypeAnnotations.add(typeAnnotation);
+      visibleTypeAnnotations = Util.add(visibleTypeAnnotations, typeAnnotation);
     } else {
-      if (invisibleTypeAnnotations == null) {
-        invisibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(1);
-      }
-      invisibleTypeAnnotations.add(typeAnnotation);
+      invisibleTypeAnnotations = Util.add(invisibleTypeAnnotations, typeAnnotation);
     }
     return typeAnnotation;
   }
 
   @Override
   public void visitAttribute(final Attribute attribute) {
-    if (attrs == null) {
-      attrs = new ArrayList<Attribute>(1);
-    }
-    attrs.add(attribute);
+    attrs = Util.add(attrs, attribute);
   }
 
   @Override
   public void visitNestMember(final String nestMember) {
-    if (nestMembers == null) {
-      nestMembers = new ArrayList<String>();
-    }
-    nestMembers.add(nestMember);
+    nestMembers = Util.add(nestMembers, nestMember);
   }
 
   @Override

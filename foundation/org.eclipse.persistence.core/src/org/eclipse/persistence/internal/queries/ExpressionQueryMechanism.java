@@ -641,41 +641,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         }
 
         items = reportQuery.getItems();
-        computeAndSetItemOffset(items, itemOffset);
+        computeAndSetItemOffset(reportQuery, items, itemOffset);
 
         return selectStatement;
-    }
-
-
-    /**
-     * calculate indexes for given items, given the current Offset
-     */
-    private int computeAndSetItemOffset(List<ReportItem> items, int itemOffset) {
-        for(ReportItem item : items) {
-            if (item.isConstructorItem()) {
-                List<ReportItem> reportItems = ((ConstructorReportItem) item).getReportItems();
-                itemOffset = computeAndSetItemOffset(reportItems, itemOffset);
-            } else {
-                //Don't set the offset on the ConstructorItem
-                item.setResultIndex(itemOffset);
-                if (item.getAttributeExpression() != null) {
-                    if (item.hasJoining()){
-                        itemOffset = item.getJoinedAttributeManager().computeJoiningMappingIndexes(true, getSession(), itemOffset);
-                    } else {
-                        if (item.getDescriptor() != null) {
-                            itemOffset += item.getDescriptor().getAllSelectionFields((ReportQuery)getQuery()).size();
-                        } else {
-                            if (item.getMapping() != null && item.getMapping().isAggregateObjectMapping()) {
-                                itemOffset += item.getMapping().getFields().size(); // Aggregate object may consist out of 1..n fields
-                            } else {
-                                ++itemOffset; //only a single attribute can be selected
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return itemOffset;
     }
 
     private void computeFieldExpressions(List<ReportItem> items, Map clonedExpressions, SQLSelectStatement selectStatement, Vector fieldExpressions) {
@@ -2071,6 +2039,11 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                             setResult(null);
                             return;
                         }
+                    }
+                    // In some cases when expression starts with literal session is not set.
+                    // Like ....CONCAT('abcd', column)....
+                    if (baseExpression != null && (baseExpression instanceof ExpressionBuilder) && baseExpression.getSession() == null) {
+                        ((ExpressionBuilder) baseExpression).setSession(getSession());
                     }
                     DatabaseField field = dataExpression.getField();
                     if(field != null) {

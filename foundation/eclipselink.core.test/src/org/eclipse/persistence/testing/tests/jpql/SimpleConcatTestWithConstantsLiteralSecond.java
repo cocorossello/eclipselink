@@ -20,12 +20,11 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 
 //This tests CONCAT with the second parameter being a constant String
-public class SimpleConcatTestWithConstants1 extends org.eclipse.persistence.testing.tests.jpql.JPQLTestCase {
+public class SimpleConcatTestWithConstantsLiteralSecond extends org.eclipse.persistence.testing.tests.jpql.JPQLTestCase {
     public void setup() {
         Employee emp = (Employee)getSomeEmployees().firstElement();
 
         String partOne;
-        String partTwo;
         String ejbqlString;
 
         partOne = emp.getFirstName();

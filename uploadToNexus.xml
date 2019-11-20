@@ -73,9 +73,8 @@
              classpathref="maven-ant-tasks.classpath" />
 
     <!-- Tool version definitions -->
-    <property name="gpg.plugin.version"   value="1.4"/>
-    <property name="wagon.http.version"   value="2.12"/>
-
+    <property name="gpg.plugin.version"  value="1.6"/>
+    <property name="wagon.http.version"   value="3.3.3"/>
 
     <!-- The repository info of where maven artifacts will be uploaded -->
     <!--    Override value to change defaults                          -->
@@ -187,7 +186,7 @@
         <property name="oracleddl.name"       value="EclipseLink OracleDDL Parser"/>
         <property name="oraclebndl.prefix"    value="org.eclipse.persistence.oracle"/>
         <property name="oraclebndl.criteria"  value="[1.0.0,9.0.0)"/>
-        <property name="oraclebndl.name"       value="EclipseLink Oracle Extensions"/>
+        <property name="oraclebndl.name"      value="EclipseLink Oracle Extensions"/>
         <property name="oraclenosql.prefix"   value="org.eclipse.persistence.oracle.nosql"/>
         <property name="oraclenosql.criteria" value="[1.0.0,9.0.0)"/>
         <property name="oraclenosql.name"     value="EclipseLink Oracle NoSQL database Extensions"/>
@@ -297,6 +296,7 @@
         <property name="dep.resource"      value="${dep.grp}jakarta.resource${dep.art}jakarta.resource-api${dep.ver}1.7.2${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.servlet"       value="${dep.grp}jakarta.servlet${dep.art}jakarta.servlet-api${dep.ver}4.0.2${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.wsdl"          value="${dep.grp}wsdl4j${dep.art}wsdl4j${dep.ver}1.6.3${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.jgroups"       value="${dep.grp}org.jgroups${dep.art}jgroups${dep.ver}4.1.0.Final${dep.type}jar${dep.scope}compile${dep.opt}true${dep.foot}"/>
         <!-- These are EclipseLink maintained public API bundles so are published under the EclipseLink GroupID, but with their own version info -->
         <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}${jpaapi.prefix}${dep.ver}${jpaapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdoapi"        value="${dep.grp}org.eclipse.persistence${dep.art}${sdoapi.prefix}${dep.ver}${sdoapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
@@ -333,7 +333,7 @@
         <property name="builder.dependencies"     value="${deps.head}${dep.core}${dep.dbws}${dep.moxy}${dep.jpa}${dep.nosql}${dep.oracle}${dep.servlet}${dep.wsdl}${dep.oracleddl}${deps.foot}"/>
         <property name="moxy.dependencies"        value="${deps.head}${dep.core}${deps.foot}"/>
         <property name="sdo.dependencies"         value="${deps.head}${dep.sdoapi}${dep.moxy}${dep.core}${deps.foot}"/>
-        <property name="extension.dependencies"   value="${deps.head}${dep.core}${deps.foot}"/>
+        <property name="extension.dependencies"   value="${deps.head}${dep.core}${dep.jgroups}${deps.foot}"/>
     </target>
 
     <!-- Nexus typicaly is configured to disallow uploads of already published versions (non-snapshot)   -->
@@ -599,39 +599,21 @@
 
     <!-- Staging targets -->
     <target name="ua-staging" if="sign">
-        <!-- sign and deploy the main artifact -->
-        <artifact:mvn>
-            <arg value="org.apache.maven.plugins:maven-gpg-plugin:${gpg.plugin.version}:sign-and-deploy-file"/>
-            <arg value="-Durl=${stagingURL}"/>
-            <arg value="-DrepositoryId=${stagingId}"/>
-            <arg value="-DpomFile=${maven.build.location}/pom.xml"/>
-            <arg value="-Dfile=${artifact}"/>
-            <arg value="-Pgpg"/>
-        </artifact:mvn>
+        <exec dir="${maven.build.location}" executable="sh">
+            <arg line="-c '${M2_HOME}/bin/mvn clean gpg:sign-and-deploy-file -Dfile=${artifact} -DpomFile=${maven.build.location}/pom.xml -Durl=${stagingURL} -DrepositoryId=${stagingId} -Poss-release'" />
+        </exec>
     </target>
     <target name="us-staging" if="sign">
         <!-- sign and deploy the sources artifact -->
-        <artifact:mvn>
-            <arg value="org.apache.maven.plugins:maven-gpg-plugin:${gpg.plugin.version}:sign-and-deploy-file"/>
-            <arg value="-Durl=${stagingURL}"/>
-            <arg value="-DrepositoryId=${stagingId}"/>
-            <arg value="-DpomFile=${maven.build.location}/pom.xml"/>
-            <arg value="-Dfile=${artifactSrc}"/>
-            <arg value="-Dclassifier=sources"/>
-            <arg value="-Pgpg"/>
-        </artifact:mvn>
+        <exec dir="${maven.build.location}" executable="sh">
+            <arg line="-c '${M2_HOME}/bin/mvn clean gpg:sign-and-deploy-file -Dfile=${artifactSrc} -DpomFile=${maven.build.location}/pom.xml -Durl=${stagingURL} -DrepositoryId=${stagingId} -Dclassifier=sources -Poss-release'" />
+        </exec>
     </target>
     <target name="uj-staging" if="sign">
         <!-- sign and deploy the javadoc artifact -->
-        <artifact:mvn>
-            <arg value="org.apache.maven.plugins:maven-gpg-plugin:${gpg.plugin.version}:sign-and-deploy-file"/>
-            <arg value="-Durl=${stagingURL}"/>
-            <arg value="-DrepositoryId=${stagingId}"/>
-            <arg value="-DpomFile=${maven.build.location}/pom.xml"/>
-            <arg value="-Dfile=${artifactJavadoc}"/>
-            <arg value="-Dclassifier=javadoc"/>
-            <arg value="-Pgpg"/>
-        </artifact:mvn>
+        <exec dir="${maven.build.location}" executable="sh">
+            <arg line="-c '${M2_HOME}/bin/mvn clean gpg:sign-and-deploy-file -Dfile=${artifactJavadoc} -DpomFile=${maven.build.location}/pom.xml -Durl=${stagingURL} -DrepositoryId=${stagingId} -Dclassifier=javadoc -Poss-release'" />
+        </exec>
     </target>
 
     <!-- ************************************* NOT USED **************************************** -->

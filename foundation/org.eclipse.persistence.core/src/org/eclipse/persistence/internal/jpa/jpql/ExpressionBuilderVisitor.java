@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2006, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -669,20 +669,28 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         List<Expression> expressions = new ArrayList<Expression>();
         List<Class<?>> types = new LinkedList<Class<?>>();
 
+        //cache the type of the expression so untyped children have a default type
+        Class<?> coalesceType = type[0];
+
         // Create the Expression for each scalar expression
         for (org.eclipse.persistence.jpa.jpql.parser.Expression child : expression.getExpression().children()) {
             child.accept(this);
             expressions.add(queryExpression);
-            types.add(type[0]);
 
-            // Set the type on an untyped ParameterExpression, so that 
-            // valid types can be passed for null parameter values in JDBC
+            //get the expression type parsed from the child expression
+            Class<?> childType = type[0];
+
+            // Default the type on an untyped ParameterExpression to the cached expression type.
+            // This is to help provide a valid type for null parameter when binding JDBC parameter types
             if (queryExpression.isParameterExpression()) {
                 ParameterExpression paramExpression = (ParameterExpression) queryExpression;
                 if (paramExpression.getType() == null || paramExpression.getType().equals(Object.class)) {
-                    paramExpression.setType(type[0]);
+                    paramExpression.setType(coalesceType);
+                    childType = coalesceType;
                 }
             }
+
+            types.add(childType);
         }
 
         // Create the COALESCE expression
@@ -1280,11 +1288,11 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         String parameterName = expression.getParameter();
 
         // Calculate the input parameter type
-        Class<?> type = queryContext.getParameterType(expression);
+        type[0] = queryContext.getParameterType(expression);
 
         // Create the expression
         queryExpression = queryContext.getBaseExpression();
-        queryExpression = queryExpression.getParameter(parameterName.substring(1), type);
+        queryExpression = queryExpression.getParameter(parameterName.substring(1), type[0]);
 
         // Cache the input parameter type
         queryContext.addInputParameter(expression, queryExpression);

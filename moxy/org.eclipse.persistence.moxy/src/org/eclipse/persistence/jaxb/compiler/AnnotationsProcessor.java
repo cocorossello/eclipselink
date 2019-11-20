@@ -194,6 +194,8 @@ import org.eclipse.persistence.oxm.annotations.XmlWriteTransformers;
  * @since Oracle TopLink 11.1.1.0.0
  */
 public final class AnnotationsProcessor {
+
+    static final String ARRAY_PACKAGE_NAME = "jaxb.dev.java.net.array";
     static final String JAVAX_ACTIVATION_DATAHANDLER = "javax.activation.DataHandler";
     static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "javax.mail.internet.MimeMultipart";
     private static final String JAVAX_XML_BIND_JAXBELEMENT = "javax.xml.bind.JAXBElement";
@@ -201,7 +203,6 @@ public final class AnnotationsProcessor {
     private static final String OXM_ANNOTATIONS = "org.eclipse.persistence.oxm.annotations";
     private static final String TYPE_METHOD_NAME = "type";
     private static final String VALUE_METHOD_NAME = "value";
-    private static final String ARRAY_PACKAGE_NAME = "jaxb.dev.java.net.array";
     private static final String ARRAY_NAMESPACE = "http://jaxb.dev.java.net/array";
     private static final String ARRAY_CLASS_NAME_SUFFIX = "Array";
     private static final String JAXB_DEV = "jaxb.dev.java.net";
@@ -950,7 +951,7 @@ public final class AnnotationsProcessor {
             List<Property> propsList = tInfo.getPropertyList();
             for (Property p : propsList) {
                 if (p.isTransient() && propOrderList.contains(p.getPropertyName())) {
-                    throw JAXBException.transientInProporder(p.getPropertyName());
+                    throw JAXBException.transientInProporder(p.getPropertyName(), tInfo.getJavaClassName());
                 }
                 if (hasPropOrder && !p.isAttribute() && !p.isTransient() && !p.isInverseReference()) {
                     if (!propOrderList.contains(p.getPropertyName())) {
@@ -1008,7 +1009,7 @@ public final class AnnotationsProcessor {
                         throw JAXBException.xmlValueAlreadySet(property.getPropertyName(), tInfo.getXmlValueProperty().getPropertyName(), jClass.getName());
                     }
                     if (!property.isXmlValue() && !property.isAttribute() && !property.isInverseReference() && !property.isTransient()) {
-                        throw JAXBException.propertyOrFieldShouldBeAnAttribute(property.getPropertyName());
+                        throw JAXBException.propertyOrFieldShouldBeAnAttribute(property.getPropertyName(), jClass.getName());
                     }
                 }
 
@@ -4117,7 +4118,7 @@ public final class AnnotationsProcessor {
             for (int i = 1; i < propOrderLength; i++) {
                 String nextPropName = propOrder[i];
                 if (!nextPropName.equals(EMPTY_STRING) && !info.getPropertyNames().contains(nextPropName)) {
-                    throw JAXBException.nonExistentPropertyInPropOrder(nextPropName);
+                    throw JAXBException.nonExistentPropertyInPropOrder(nextPropName, info.getJavaClassName());
                 }
             }
         }
@@ -4130,11 +4131,11 @@ public final class AnnotationsProcessor {
 
         while (parent != null && !(parent.getQualifiedName().equals(JAVA_LANG_OBJECT))) {
             if (!useXmlValueExtension(property)) {
-                throw JAXBException.propertyOrFieldCannotBeXmlValue(propName);
+                throw JAXBException.propertyOrFieldCannotBeXmlValue(propName, cls.getQualifiedName());
             } else {
                 TypeInfo parentTypeInfo = typeInfos.get(parent.getQualifiedName());
                 if(hasElementMappedProperties(parentTypeInfo)) {
-                    throw JAXBException.propertyOrFieldCannotBeXmlValue(propName);
+                    throw JAXBException.propertyOrFieldCannotBeXmlValue(propName, cls.getQualifiedName());
                 }
                 parent = parent.getSuperclass();
             }
@@ -4144,7 +4145,7 @@ public final class AnnotationsProcessor {
         if (schemaQName == null) {
             TypeInfo refInfo = processReferencedClass(ptype);
             if (refInfo != null && !refInfo.isEnumerationType() && refInfo.getXmlValueProperty() == null) {
-                throw JAXBException.invalidTypeForXmlValueField(propName);
+                throw JAXBException.invalidTypeForXmlValueField(propName, cls.getQualifiedName());
             }
         }
     }

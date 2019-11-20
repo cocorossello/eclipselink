@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,9 +22,13 @@
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 import org.eclipse.persistence.exceptions.*;
@@ -45,8 +49,16 @@ import org.eclipse.persistence.queries.*;
  * @since TOPLink/Java 1.0
  */
 public class SQLServerPlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+    
+    /** MSSQL-specific JDBC type constants */
+    private static final int DATETIMEOFFSET_TYPE = -155;
+    
     /** Support for sequence objects and OFFSET FETCH NEXT added in SQL Server 2012 */
     private boolean isVersion11OrHigher;
+    
+    /** The official MS JDBC driver fully supports ODT since version 7.1.4 */
+    private Boolean driverSupportsOffsetDateTime;
+    
     private boolean isConnectionDataInitialized;
 
     public SQLServerPlatform(){
@@ -60,11 +72,26 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         if (isConnectionDataInitialized) {
             return;
         }
+        
         DatabaseMetaData dmd = connection.getMetaData();
+        // could be using a non-MS driver (e.g. jTDS)
+        boolean isMicrosoftDriver = dmd.getDriverName().startsWith("Microsoft JDBC Driver");
         int databaseVersion = dmd.getDatabaseMajorVersion();
+        String driverVersion = dmd.getDriverVersion();
         isVersion11OrHigher = databaseVersion >= 11;
+        if (driverSupportsOffsetDateTime == null) {
+            driverSupportsOffsetDateTime = isMicrosoftDriver && Helper.compareVersions(driverVersion, "7.1.4") >= 0;
+        }
+        driverSupportsNationalCharacterVarying = isMicrosoftDriver && Helper.compareVersions(driverVersion, "4.0.0") >= 0;
+        
         isConnectionDataInitialized = true;
-        this.driverSupportsNationalCharacterVarying = Helper.compareVersions(dmd.getDriverVersion(), "4.0.0") >= 0;
+    }
+
+    /**
+     * Allow user to turn off ODT support, in case they rely on the old behavior.
+     */
+    public void setDriverSupportsOffsetDateTime(boolean driverSupportsOffsetDateTime) {
+        this.driverSupportsOffsetDateTime = driverSupportsOffsetDateTime;
     }
 
     /**
@@ -774,5 +801,40 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         
         call.setIgnoreFirstRowSetting(true);
         call.setIgnoreMaxResultsSetting(true);
+    }
+
+    @Override
+    public Object getObjectFromResultSet(ResultSet resultSet, int columnNumber, int type, AbstractSession session)
+            throws SQLException {
+        if (driverSupportsOffsetDateTime && type == DATETIMEOFFSET_TYPE) {
+            // avoid default logic, which would return a microsoft.sql.DateTimeOffset
+            return resultSet.getObject(columnNumber, OffsetDateTime.class);
+        }
+        
+        return super.getObjectFromResultSet(resultSet, columnNumber, type, session);
+    }
+
+    @Override
+    public void setParameterValueInDatabaseCall(Object parameter, PreparedStatement statement, int index,
+            AbstractSession session) throws SQLException {
+        if (driverSupportsOffsetDateTime && parameter instanceof OffsetDateTime) {
+            // avoid default logic, which loses offset when converting to java.sql.Timestamp
+            statement.setObject(index, parameter);
+            return;
+        }
+
+        super.setParameterValueInDatabaseCall(parameter, statement, index, session);
+    }
+
+    @Override
+    public void setParameterValueInDatabaseCall(Object parameter, CallableStatement statement, String name,
+            AbstractSession session) throws SQLException {
+        if (driverSupportsOffsetDateTime && parameter instanceof OffsetDateTime) {
+            // avoid default logic, which loses offset when converting to java.sql.Timestamp
+            statement.setObject(name, parameter);
+            return;
+        }
+
+        super.setParameterValueInDatabaseCall(parameter, statement, name, session);
     }
 }

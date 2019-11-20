@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
  * A doubly linked list of {@link AbstractInsnNode} objects. <i>This implementation is not thread
  * safe</i>.
  */
-public class InsnList {
+public class InsnList implements Iterable<AbstractInsnNode> {
 
   /** The number of instructions in this list. */
   private int size;
@@ -151,6 +151,7 @@ public class InsnList {
    *
    * @return an iterator over the instructions in this list.
    */
+  @Override
   public ListIterator<AbstractInsnNode> iterator() {
     return iterator(0);
   }
@@ -209,7 +210,7 @@ public class InsnList {
       cache[index] = newInsnNode;
       newInsnNode.index = index;
     } else {
-      newInsnNode.index = 0; // newInnsnNode now belongs to an InsnList.
+      newInsnNode.index = 0; // newInsnNode now belongs to an InsnList.
     }
     oldInsnNode.index = -1; // oldInsnNode no longer belongs to an InsnList.
     oldInsnNode.previousInsn = null;
@@ -534,6 +535,9 @@ public class InsnList {
 
     @Override
     public Object previous() {
+      if (previousInsn == null) {
+        throw new NoSuchElementException();
+      }
       AbstractInsnNode result = previousInsn;
       nextInsn = result;
       previousInsn = result.previousInsn;
