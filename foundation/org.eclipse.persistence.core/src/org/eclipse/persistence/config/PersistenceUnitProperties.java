@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1029,20 +1029,20 @@ public class PersistenceUnitProperties {
     public static final String JDBC_BIND_PARAMETERS = "eclipselink.jdbc.bind-parameters";
 
     /**
-     * Property "<code>eclipselink.jdbc.force-bind-parameters</code>" enables parameter binding 
-     * in the creation of JDBC prepared statements. Some database platforms disable parameter binding 
-     * on certain functions and relations. This property allows the user to force parameter binding 
-     * to be enabled regardless. 
+     * Property "<code>eclipselink.jdbc.force-bind-parameters</code>" enables parameter binding
+     * in the creation of JDBC prepared statements. Some database platforms disable parameter binding
+     * on certain functions and relations. This property allows the user to force parameter binding
+     * to be enabled regardless.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
      * <li>"<code>false</code>" (DEFAULT) - values will default to platform specific logic
      * <li>"<code>true</code>" - bindings will use platform default
      * </ul>
-     * 
-     * @see org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_BIND_PARAMETERS
-    */
-   public static final String JDBC_FORCE_BIND_PARAMETERS = "eclipselink.jdbc.force-bind-parameters";
+     *
+     * @see #JDBC_BIND_PARAMETERS
+     */
+    public static final String JDBC_FORCE_BIND_PARAMETERS = "eclipselink.jdbc.force-bind-parameters";
 
     /**
      * The "<code>eclipselink.jdbc.exclusive-connection.mode</code>" property
@@ -1264,7 +1264,7 @@ public class PersistenceUnitProperties {
      * <li>"<code>DISABLE_SELECTIVE</code>"
      * <li>"<code>UNSPECIFIED</code>"
      * </ul>
-     * 
+     *
      * @see javax.persistence.SharedCacheMode
      */
     public static final String SHARED_CACHE_MODE = "javax.persistence.sharedCache.mode";
@@ -3135,8 +3135,23 @@ public class PersistenceUnitProperties {
     public static final String PESSIMISTIC_LOCK_TIMEOUT = QueryHints.PESSIMISTIC_LOCK_TIMEOUT;
 
     /**
+     * The "<code>eclipselink.pessimistic.lock.timeout.unit</code>" property
+     * configures the query timeout unit value. Allows users more refinement.
+     * Used in combination with PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>",
+     * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
+     * </ul>
+     * @see #PESSIMISTIC_LOCK_TIMEOUT_UNIT
+    */
+    public static final String PESSIMISTIC_LOCK_TIMEOUT_UNIT = QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT;
+
+    /**
      * The "<code>javax.persistence.query.timeout</code>" property configures
-     * the default query timeout value. Defaults to seconds, but is configurable 
+     * the default query timeout value. Defaults to seconds, but is configurable
      * with PersistenceUnitProperties.QUERY_TIMEOUT_UNIT
      * <p>
      * <b>Allowed Values:</b>
@@ -3154,8 +3169,8 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>",
-     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>",
      * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
      * </ul>
      * @see #QUERY_TIMEOUT
@@ -3826,8 +3841,8 @@ public class PersistenceUnitProperties {
 
     /**
      * The "<code>eclipselink.jpa.sqlcall.deferral.default</code>" property defines if SQL calls should be deferred to end of
-     * transaction by default or not. When setting this property to <code>false</code>, the application assumes the responsibility 
-     * of ordering the SQL statements and must therefore be aware of any interdependencies between entities. 
+     * transaction by default or not. When setting this property to <code>false</code>, the application assumes the responsibility
+     * of ordering the SQL statements and must therefore be aware of any interdependencies between entities.
      * <p>
      * <b>Allowed Values</b> (String)<b>:</b>
      * <ul>

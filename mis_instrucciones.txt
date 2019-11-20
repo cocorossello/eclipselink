@@ -1,10 +1,8 @@
 ﻿
 
-set JAVA_HOME=C:\Program Files\Java\jdk1.8.0_73
-
-
-
-ant -f antbuild.xml -Djunit.lib=C:\Users\cocor\.gradle\caches\modules-2\files-2.1\junit\junit\4.12\2973d150c0dc1fefe998f834810d68f278ea58ec\junit-4.12.jar clean build-distribution
+set JAVA_HOME=d:\tools\jdk8u212-b03
+set M2_HOME=d:\tools\apache-maven-3.5.4-bin
+ant -f antbuild.xml -Djunit.lib=C:\Users\Usuario\.gradle\caches\modules-2\files-2.1\junit\junit\4.12\2973d150c0dc1fefe998f834810d68f278ea58ec\junit-4.12.jar clean build-distribution
 
 Del eclipselink.jar de la raiz:
 
@@ -21,13 +19,17 @@ jaxb
 xr
 
 
+Reemplazar asm por el que hay en asm7.1/build
+
+
 quitar javax, la api irá por separado
  
  
  uploadToNexus.xml :
  Poner el repo-user y repo-password
  
-ant -f uploadToNexus.xml -Drelease.version=2.7.4.TRAVELC.18 -Dbuild.type=SNAPSHOT -Dgit.hash=32adsalksdfjfsdao123213
+
+ant -f uploadToNexus.xml -Drelease.version=2.7.4.TRAVELC.22 -Dbuild.type=SNAPSHOT -Dgit.hash=32adsalksdfjfsdao123213
 
 
  coger de lib el maven-ant-tasks.jar y ponerlo en ANT_HOME/lib
@@ -36,4 +38,9 @@ ant -f uploadToNexus.xml -Drelease.version=2.7.4.TRAVELC.18 -Dbuild.type=SNAPSHO
  
  
  
- Para cambiar asm hay que cambiar en plugins el projecto de asm y los jar de asm (el src y el otro...)
+ Para cambiar asm hay que hacer checkout de asm, añadir en una carpeta los fuentes de asm, asm-util, asm-xml, asm-tree, asm-analisys
+
+ ejecutar para cambiarlos de paquete
+ java -cp D:\proyectos\eclipselink/utils/eclipselink.utils.rename/package-rename.jar org.eclipse.persistence.utils.rename.MigrateTopLinkToEclipseLink D:\proyectos\asm\asm-all\src\main\java/org/objectweb d:\proyectos\basura asm.properties
+
+ compilarlos en el mismo web y ponerlos en asm7.1/build

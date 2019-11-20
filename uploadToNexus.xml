@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -80,11 +80,11 @@
     <!-- The repository info of where maven artifacts will be uploaded -->
     <!--    Override value to change defaults                          -->
     <property name="stagingId"   value="tr2-maven-repo"/>
-    <property name="stagingURL"  value="http://nexus2.travelcompositor.com/repository/maven-releases"/>
+    <property name="stagingURL"  value="http://nexus.travelcompositor.com/repository/maven-releases"/>
     <property name="snapshotId"  value="tr2-maven-repo-snapshots"/>
-    <property name="snapshotURL" value="http://nexus2.travelcompositor.com/repository/maven-releases/"/>
+    <property name="snapshotURL" value="http://nexus.travelcompositor.com/repository/maven-releases/"/>
     <property name="repo-user"  value="admin"/>
-    <property name="repo-password" value="admin123"/>
+    <property name="repo-password" value="xxx"/>
 
     <target name="upload-maven-all" depends="upload-eclipselink"/>
 
@@ -172,6 +172,7 @@
     </target>
 
     <target name="discover-static-built-info" depends="init">
+        <property name="jpaapi.prefix"        value="jakarta.persistence"/>
         <property name="sdoapi.prefix"        value="commonj.sdo"/>
         <property name="sdoapi.criteria"      value="[2.1.1,2.2.0)"/>
         <property name="sdoapi.name"          value="SDO API"/>
@@ -297,7 +298,7 @@
         <property name="dep.servlet"       value="${dep.grp}jakarta.servlet${dep.art}jakarta.servlet-api${dep.ver}4.0.2${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.wsdl"          value="${dep.grp}wsdl4j${dep.art}wsdl4j${dep.ver}1.6.3${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- These are EclipseLink maintained public API bundles so are published under the EclipseLink GroupID, but with their own version info -->
-        <property name="dep.persistence"   value=""/>
+        <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}${jpaapi.prefix}${dep.ver}${jpaapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdoapi"        value="${dep.grp}org.eclipse.persistence${dep.art}${sdoapi.prefix}${dep.ver}${sdoapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- APIs that are not EclipseLink's maintained public API bundles but are to be included in EclipseLink pom.xml.  -->
         <!-- These are EclipseLink jars so will be versioned with the build -->
