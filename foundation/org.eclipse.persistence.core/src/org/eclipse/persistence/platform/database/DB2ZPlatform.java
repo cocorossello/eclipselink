@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2015, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2015, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,6 @@ package org.eclipse.persistence.platform.database;
 import java.io.ByteArrayInputStream;
 import java.io.CharArrayReader;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -66,6 +65,7 @@ public class DB2ZPlatform extends DB2Platform {
 
     public DB2ZPlatform() {
         super();
+        this.pingSQL = "SELECT COUNT(*) from SYSIBM.SYSDUMMY1 WHERE 1 = 0";
     }
 
     @Override
@@ -93,7 +93,7 @@ public class DB2ZPlatform extends DB2Platform {
         if (name != null && shouldPrintStoredProcedureArgumentNameInCall()) {
             return ":" + name;
         }
-        return "";
+        return "?";
     }
 
     /**
@@ -186,7 +186,7 @@ public class DB2ZPlatform extends DB2Platform {
                 Object o = statement.unwrap(clazz);
                 PrivilegedAccessHelper.invokeMethod(method, o, parameters);
             }
-        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+        } catch (ReflectiveOperationException e) {
             AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, e);
             //Didn't work, fall back. This most likely still won't work, but the driver exception from there will be helpful.
             super.registerOutputParameter(statement, name, jdbcType);
@@ -225,7 +225,7 @@ public class DB2ZPlatform extends DB2Platform {
                 Object o = statement.unwrap(clazz);
                 PrivilegedAccessHelper.invokeMethod(method, o, parameters);
             }
-        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+        } catch (ReflectiveOperationException e) {
             AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, e);
             //Didn't work, fall back. This most likely still won't work, but the driver exception from there will be helpful.
             super.registerOutputParameter(statement, name, jdbcType, typeName);
@@ -423,7 +423,7 @@ public class DB2ZPlatform extends DB2Platform {
                     Object o = statement.unwrap(clazz);
                     PrivilegedAccessHelper.invokeMethod(method, o, parameters);
                 }
-            } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            } catch (ReflectiveOperationException e) {
                 AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, e);
                 //Didn't work, fall back. This most likely still won't work, but the driver exception from there will be helpful.
                 super.setParameterValueInDatabaseCall(parameter, statement, name, session);
@@ -471,10 +471,53 @@ public class DB2ZPlatform extends DB2Platform {
                 Object o = statement.unwrap(clazz);
                 PrivilegedAccessHelper.invokeMethod(method, o, parameters);
             }
-        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+        } catch (ReflectiveOperationException e) {
             AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, e);
             //Didn't work, fall back. This most likely still won't work, but the driver exception from there will be helpful.
             super.setNullFromDatabaseField(databaseField, statement, name);
         }
+    }
+
+    @Override
+    public Object getParameterValueFromDatabaseCall(CallableStatement statement, String name, AbstractSession session)
+                throws SQLException {
+        String methodName = null;
+        Class[] methodArgs = null;
+        Object[] parameters = null;
+
+        methodName = "getJccObjectAtName";
+        methodArgs = new Class[] {String.class};
+        parameters = new Object[] {name};
+
+        if(methodName != null) {
+            try {
+                Class clazz = null;
+                Method method = null;
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    try {
+                        ClassLoader cl = AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
+                        clazz = AccessController.doPrivileged(new PrivilegedClassForName(DB2_CALLABLESTATEMENT_CLASS, true, cl));
+                        method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, methodName, methodArgs, true));
+                        Object o = statement.unwrap(clazz);
+                        return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, o, parameters));
+                    } catch (PrivilegedActionException ex) {
+                        if (ex.getCause() instanceof ClassNotFoundException) {
+                            throw (ClassNotFoundException) ex.getCause();
+                        }
+                        throw (RuntimeException) ex.getCause();
+                    }
+                } else {
+                    ClassLoader cl = PrivilegedAccessHelper.getContextClassLoader(Thread.currentThread());
+                    clazz = PrivilegedAccessHelper.getClassForName(DB2_CALLABLESTATEMENT_CLASS, true, cl);
+                    method = PrivilegedAccessHelper.getMethod(clazz, methodName, methodArgs, true);
+                    Object o = statement.unwrap(clazz);
+                    return PrivilegedAccessHelper.invokeMethod(method, o, parameters);
+                }
+            } catch (ReflectiveOperationException e) {
+                AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, e);
+            }
+        }
+        //Didn't work, fall back. This most likely still won't work, but the driver exception from there will be helpful.
+        return super.getParameterValueFromDatabaseCall(statement, name, session);
     }
 }

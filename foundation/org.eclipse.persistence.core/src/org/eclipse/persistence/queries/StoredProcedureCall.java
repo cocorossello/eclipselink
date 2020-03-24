@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,8 +18,10 @@
 package org.eclipse.persistence.queries;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
@@ -890,7 +893,11 @@ public class StoredProcedureCall extends DatabaseCall {
         DatabasePlatform platform = session.getPlatform();
         //Both lists should be the same size
         for (int index = 0; index < size; index++) {
-            platform.setParameterValueInDatabaseCall(parameters.get(index), (CallableStatement)statement, procedureArgs.get(index), session);
+            if (session.getProject().namingIntoIndexed()) {
+                platform.setParameterValueInDatabaseCall(parameters.get(index), (PreparedStatement) statement, index+1, session);
+            } else {
+                platform.setParameterValueInDatabaseCall(parameters.get(index), (CallableStatement) statement, procedureArgs.get(index), session);
+            }
         }
 
         return statement;
@@ -1044,20 +1051,15 @@ public class StoredProcedureCall extends DatabaseCall {
         this.optionalArguments = optionalArguments;
     }
 
-    /**
-     * Get the return object from the statement. Use the index to determine what return object to get.
-     * @param index - 0-based index in the argument list
-     * @return
-     */
     @Override
-    protected Object getObject(CallableStatement statement, int index) throws SQLException {
+    public Object getOutputParameterValue(CallableStatement statement, int index, AbstractSession session) throws SQLException {
         List<String> procedureArgs = getProcedureArgumentNames();
         if(procedureArgs.size() == 0 || procedureArgs.get(0) == null) {
-            return super.getObject(statement, index);
+            return super.getOutputParameterValue(statement, index, session);
         }
 
         String name = procedureArgs.get(index);
-        return statement.getObject(name);
+        return getOutputParameterValue(statement, name, session);
     }
 
     /**
@@ -1075,5 +1077,37 @@ public class StoredProcedureCall extends DatabaseCall {
             throw ValidationException.fileError(exception);
         }
         getParameters().add(parameter);
+    }
+
+    /**
+     * Return the SQL string for logging purposes.
+     */
+    @Override
+    public String getLogString(Accessor accessor) {
+        if (hasParameters()) {
+            StringWriter writer = new StringWriter();
+            writer.write(getSQLString());
+            writer.write(Helper.cr());
+            if (hasParameters()) {
+                AbstractSession session = null;
+                if (getQuery() != null) {
+                    session = getQuery().getSession();
+                }
+                List<String> procedureArgs = getProcedureArgumentNames();
+                boolean indexBased = procedureArgs.size() == 0 || procedureArgs.get(0) == null || session.getProject().namingIntoIndexed();
+                Collection<String> parameters = new ArrayList<>();
+                for (int index = 0; index < getParameters().size(); index++) {
+                    if (indexBased) {
+                        parameters.add(String.valueOf(getParameters().get(index)));
+                    } else {
+                        parameters.add(procedureArgs.get(index) + "=>" + getParameters().get(index));
+                    }
+                }
+                appendLogParameters(parameters, accessor, writer, session);
+            }
+            return writer.toString();
+        } else {
+            return getSQLString();
+        }
     }
 }

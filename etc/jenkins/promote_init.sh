@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -15,30 +15,32 @@
 echo '-[ EclipseLink Promotion Init ]-----------------------------------------------------------'
 . ${HOME}/etc/jenkins/setEnvironment.sh
 mkdir -p ${DNLD_DIR}/nightly/${VERSION}
-mkdir -p ${MILESTONE_DNLD_DIR}/${VERSION}/${RELEASE_CANDIDATE_ID}
 mkdir -p ${RELEASE_DNLD_DIR}/${VERSION}
 mkdir -p ${RELEASE_SITE_DIR}
 mkdir -p ${MILESTONE_SITE_DIR}
 mkdir -p ${NIGHTLY_SITE_DIR}
 mkdir -p ${SIGN_DIR}
 scp -r genie.eclipselink@projects-storage.eclipse.org:${DNLD_DIR_REMOTE}/nightly/${VERSION}/* ${DNLD_DIR}/nightly/${VERSION}
-scp -r genie.eclipselink@projects-storage.eclipse.org:${MILESTONE_DNLD_DIR_REMOTE}/${VERSION}/${RELEASE_CANDIDATE_ID}/* ${MILESTONE_DNLD_DIR}/${VERSION}/${RELEASE_CANDIDATE_ID}
+if [ ${RELEASE} = "true" ]; then
+  mkdir -p ${MILESTONE_DNLD_DIR}/${VERSION}/${RELEASE_CANDIDATE_ID}
+  scp -r genie.eclipselink@projects-storage.eclipse.org:${MILESTONE_DNLD_DIR_REMOTE}/${VERSION}/${RELEASE_CANDIDATE_ID}/* ${MILESTONE_DNLD_DIR}/${VERSION}/${RELEASE_CANDIDATE_ID}
+fi
 
 echo '-[ EclipseLink Init ]-----------------------------------------------------------'
 
 mkdir -p $HOME/extension.lib.external/mavenant
 
 #DOWNLOAD SOME DEPENDENCIES
-wget -nc http://repo1.maven.org/maven2/junit/junit/4.12/junit-4.12.jar -O $HOME/extension.lib.external/junit-4.12.jar
-wget -nc http://repo1.maven.org/maven2/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar -O $HOME/extension.lib.external/hamcrest-core-1.3.jar
-wget -nc http://repo1.maven.org/maven2/org/jmockit/jmockit/1.35/jmockit-1.35.jar -O $HOME/extension.lib.external/jmockit-1.35.jar
-wget -nc http://repo1.maven.org/maven2/org/hibernate/validator/hibernate-validator/6.0.7.Final/hibernate-validator-6.0.7.Final.jar -O $HOME/extension.lib.external/hibernate-validator-6.0.7.Final.jar
-wget -nc http://repo1.maven.org/maven2/org/jboss/logging/jboss-logging/3.3.0.Final/jboss-logging-3.3.0.Final.jar -O $HOME/extension.lib.external/jboss-logging-3.3.0.Final.jar
-wget -nc http://repo1.maven.org/maven2/org/glassfish/javax.el/3.0.1-b08/javax.el-3.0.1-b08.jar -O $HOME/extension.lib.external/javax.el-3.0.1-b08.jar
-wget -nc http://repo1.maven.org/maven2/com/fasterxml/classmate/1.3.1/classmate-1.3.1.jar -O $HOME/extension.lib.external/classmate-1.3.1.jar
-wget -nc http://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.48/mysql-connector-java-5.1.48.jar -O $HOME/extension.lib.external/mysql-connector-java-5.1.48.jar
+wget -nc https://repo1.maven.org/maven2/junit/junit/4.12/junit-4.12.jar -O $HOME/extension.lib.external/junit-4.12.jar
+wget -nc https://repo1.maven.org/maven2/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar -O $HOME/extension.lib.external/hamcrest-core-1.3.jar
+wget -nc https://repo1.maven.org/maven2/org/jmockit/jmockit/1.35/jmockit-1.35.jar -O $HOME/extension.lib.external/jmockit-1.35.jar
+wget -nc https://repo1.maven.org/maven2/org/hibernate/validator/hibernate-validator/6.0.7.Final/hibernate-validator-6.0.7.Final.jar -O $HOME/extension.lib.external/hibernate-validator-6.0.7.Final.jar
+wget -nc https://repo1.maven.org/maven2/org/jboss/logging/jboss-logging/3.3.0.Final/jboss-logging-3.3.0.Final.jar -O $HOME/extension.lib.external/jboss-logging-3.3.0.Final.jar
+wget -nc https://repo1.maven.org/maven2/org/glassfish/javax.el/3.0.1-b08/javax.el-3.0.1-b08.jar -O $HOME/extension.lib.external/javax.el-3.0.1-b08.jar
+wget -nc https://repo1.maven.org/maven2/com/fasterxml/classmate/1.3.1/classmate-1.3.1.jar -O $HOME/extension.lib.external/classmate-1.3.1.jar
+wget -nc https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.48/mysql-connector-java-5.1.48.jar -O $HOME/extension.lib.external/mysql-connector-java-5.1.48.jar
 wget -nc https://archive.apache.org/dist/ant/binaries/apache-ant-1.10.7-bin.tar.gz -O $HOME/extension.lib.external/apache-ant-1.10.7-bin.tar.gz
-wget -nc http://archive.apache.org/dist/maven/ant-tasks/2.1.3/binaries/maven-ant-tasks-2.1.3.jar -O $HOME/extension.lib.external/mavenant/maven-ant-tasks-2.1.3.jar
+wget -nc https://archive.apache.org/dist/maven/ant-tasks/2.1.3/binaries/maven-ant-tasks-2.1.3.jar -O $HOME/extension.lib.external/mavenant/maven-ant-tasks-2.1.3.jar
 wget -nc https://download.eclipse.org/eclipse/downloads/drops4/R-4.10-201812060815/eclipse-SDK-4.10-linux-gtk-x86_64.tar.gz -O $HOME/extension.lib.external/eclipse-SDK-4.10-linux-gtk-x86_64.tar.gz
 
 #UNPACK SOME  DEPENDENCIES

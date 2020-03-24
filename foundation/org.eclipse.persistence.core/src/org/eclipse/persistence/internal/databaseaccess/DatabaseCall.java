@@ -305,7 +305,7 @@ public abstract class DatabaseCall extends DatasourceCall {
             if (parameter instanceof OutputParameterForCallableStatement) {
                 OutputParameterForCallableStatement outParameter = (OutputParameterForCallableStatement)parameter;
                 if (!outParameter.isCursor() || !isCursorOutputProcedure()) {
-                    Object value = getObject(statement, index);
+                    Object value = getOutputParameterValue(statement, index, session);
                     DatabaseField field = outParameter.getOutputField();
                     if (value instanceof Struct){
                         ClassDescriptor descriptor = session.getDescriptor(field.getType());
@@ -778,8 +778,7 @@ public abstract class DatabaseCall extends DatasourceCall {
                 // outParameter contains all the info for registerOutputParameter call.
                 OutputParameterForCallableStatement outParameter = new OutputParameterForCallableStatement(outField, session, isCursor);
                 this.parameters.set(i, outParameter);
-                // nothing to do during translate method
-                this.parameterTypes.set(i, LITERAL);
+                this.parameterTypes.set(i, parameterType);
             }
         }
         if (this.returnsResultSet == null) {
@@ -1182,6 +1181,11 @@ public abstract class DatabaseCall extends DatasourceCall {
                 } else if (parameterType == INOUT) {
                     Object value = getValueForInOutParameter(parameter, translationRow, modifyRow, session);
                     parametersValues.add(value);
+                } else if (parameterType == OUT || parameterType == OUT_CURSOR) {
+                    if (parameter != null) {
+                        ((OutputParameterForCallableStatement) parameter).getOutputField().setIndex(index);
+                    }
+                    parametersValues.add(parameter);
                 }
             }
             setParameters(parametersValues);
@@ -1383,11 +1387,30 @@ public abstract class DatabaseCall extends DatasourceCall {
     }
 
     /**
-     * Get the return object from the statement. Use the index to determine what return object to get.
-     * @param index - 0-based index in the argument list
+     * 
+     * INTERNAL:
+     * 
+     * Get the return object from the statement. Use the parameter index to determine what return object to get.
+     * @param statement SQL/JDBC statement to call stored procedure/function
+     * @param index 0-based index in the argument list
+     * @param session Active database session (in connected state).
      * @return
      */
-    protected Object getObject(CallableStatement statement, int index) throws SQLException {
-        return statement.getObject(index + 1);
+    public Object getOutputParameterValue(CallableStatement statement, int index, AbstractSession session) throws SQLException {
+        return session.getPlatform().getParameterValueFromDatabaseCall(statement, index + 1, session);
+    }
+
+    /**
+     * 
+     * INTERNAL:
+     * 
+     * Get the return object from the statement. Use the parameter name to determine what return object to get.
+     * @param statement SQL/JDBC statement to call stored procedure/function
+     * @param name parameter name
+     * @param session Active database session (in connected state).
+     * @return
+     */
+    public Object getOutputParameterValue(CallableStatement statement, String name, AbstractSession session) throws SQLException {
+        return session.getPlatform().getParameterValueFromDatabaseCall(statement, name, session);
     }
 }
