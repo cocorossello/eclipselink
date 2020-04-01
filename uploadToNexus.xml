@@ -79,9 +79,9 @@
     <!-- The repository info of where maven artifacts will be uploaded -->
     <!--    Override value to change defaults                          -->
     <property name="stagingId"   value="tr2-maven-repo"/>
-    <property name="stagingURL"  value="http://nexus.travelcompositor.com/repository/maven-releases"/>
+    <property name="stagingURL"  value="https://nexus.travelcompositor.com/repository/maven-releases"/>
     <property name="snapshotId"  value="tr2-maven-repo-snapshots"/>
-    <property name="snapshotURL" value="http://nexus.travelcompositor.com/repository/maven-releases/"/>
+    <property name="snapshotURL" value="https://nexus.travelcompositor.com/repository/maven-releases/"/>
     <property name="repo-user"  value="admin"/>
     <property name="repo-password" value="xxx"/>
 
@@ -567,7 +567,12 @@
     </target>
     <target name="ua-snapshot" unless="sign">
         <!-- Install provider for https protocol -->
-        <artifact:install-provider artifactId="wagon-http" version="${wagon.http.version}"/>
+		<artifact:remoteRepository id="remote.repository" url="https://repo1.maven.org/maven2" />
+
+        <artifact:install-provider artifactId="wagon-http" version="${wagon.http.version}">
+		  <remoteRepository refid="remote.repository" />
+
+		</artifact:install-provider>
         <!-- Deploy Artifact to repote repo, attach source -->
         <artifact:deploy file="${artifact}">
             <artifact:remoteRepository url="${snapshotURL}">
@@ -585,7 +590,11 @@
     </target>
     <target name="uawj-snapshot" unless="sign">
         <!-- Install provider for https protocol -->
-        <artifact:install-provider artifactId="wagon-http" version="${wagon.http.version}"/>
+		<artifact:remoteRepository id="remote.repository" url="https://repo1.maven.org/maven2" />
+		
+        <artifact:install-provider artifactId="wagon-http" version="${wagon.http.version}">
+		  <remoteRepository refid="remote.repository" />
+		</artifact:install-provider>		
         <!-- Deploy Artifact to repote repo, attach source and javadoc -->
         <artifact:deploy file="${artifact}">
             <artifact:remoteRepository url="${snapshotURL}">
