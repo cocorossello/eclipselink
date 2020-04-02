@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="b094e494-0898-47ef-98e6-64b7c5842d26" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/descriptors/changetracking/AttributeChangeListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/descriptors/changetracking/AttributeChangeListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mis_instrucciones.txt" beforeDir="false" afterPath="$PROJECT_DIR$/mis_instrucciones.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/uploadToNexus.xml" beforeDir="false" afterPath="$PROJECT_DIR$/uploadToNexus.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -22,7 +22,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/pom.xml" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -48,6 +48,7 @@
       <workItem from="1574289161534" duration="1134000" />
       <workItem from="1585076725860" duration="1994000" />
       <workItem from="1585080157986" duration="3981000" />
+      <workItem from="1585765796510" duration="1881000" />
     </task>
     <servers />
   </component>
