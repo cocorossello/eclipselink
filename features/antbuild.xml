@@ -133,7 +133,7 @@
         <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
 
         <!-- Defaults of Pre-Set variables -->
-        <property name="release.version"                    value="2.7.7"/>
+        <property name="release.version"                    value="2.7.8"/>
         <property name="version.qualifier"                  value="qualifier"/>
         <property name="version.string"                     value="${release.version}.${version.qualifier}"/>
         <property name="eclipselink.install.prefix"         value="eclipselink"/>
@@ -259,7 +259,7 @@
         <property name="jaxrs.criteria" value="(2.1.2,3.0.0)"/>
         <property name="xml.bind.prefix" value="jakarta.xml.bind-api"/>
         <property name="xml.bind.criteria" value="(2.3.1,3.0.0)"/>
-        <property name="sun.xml.bind.prefix" value="com.sun.xml.bind.jaxb-osgi"/>
+        <property name="sun.xml.bind.prefix" value="com.sun.xml.bind.jaxb-impl"/>
         <property name="sun.xml.bind.criteria" value="(2.3.1,5.0.0)"/>
         <property name="mongodb.prefix" value="org.mongodb.mongo-java-driver"/>
         <property name="mongodb.criteria" value="[2.0.0,9.0.0)"/>
@@ -300,6 +300,11 @@
     <!-- clean -->
     <target name="clean" depends="init" description="Clean all generated content">
         <delete dir="${classes.dir}" includeEmptyDirs="true" failonerror="false"/>
+        <delete dir="${basedir}/p2site" includeEmptyDirs="true" failonerror="false"/>
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${basedir}" includes="eclipselink-P2*.zip"/>
+        </delete>
+
     </target>
 
     <!-- build feature jars -->
