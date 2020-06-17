@@ -33,7 +33,7 @@ quitar javax, la api irá por separado
  Poner el repo-user y repo-password
  
 
-ant -f uploadToNexus.xml -Drelease.version=2.7.5.TRAVELC.6 -Dbuild.type=SNAPSHOT -Dgit.hash=32adsalksdfjfsdao123213
+ant -f uploadToNexus.xml -Drelease.version=2.7.5.TRAVELC.9 -Dbuild.type=SNAPSHOT -Dgit.hash=32adsalksdfjfsdao123213
 
 
  coger de lib el maven-ant-tasks.jar y ponerlo en ANT_HOME/lib
