@@ -79,9 +79,9 @@
     <!-- The repository info of where maven artifacts will be uploaded -->
     <!--    Override value to change defaults                          -->
     <property name="stagingId"   value="tr2-maven-repo"/>
-    <property name="stagingURL"  value="https://nexus.travelcompositor.com/repository/maven-releases"/>
+    <property name="stagingURL"  value="https://nexus.travelcdev.com/repository/maven-releases"/>
     <property name="snapshotId"  value="tr2-maven-repo-snapshots"/>
-    <property name="snapshotURL" value="https://nexus.travelcompositor.com/repository/maven-releases/"/>
+    <property name="snapshotURL" value="https://nexus.travelcdev.com/repository/maven-releases/"/>
     <property name="repo-user"  value="admin"/>
     <property name="repo-password" value="xxx"/>
 

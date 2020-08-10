@@ -56,21 +56,13 @@
     <option name="version" value="2" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="427" y="507" key="FileChooserDialogImpl" timestamp="1585085296580">
-      <screen x="0" y="0" width="2560" height="1400" />
+    <state x="2706" y="273" width="1427" height="708" key="find.popup" timestamp="1597044134888">
+      <screen x="0" y="0" width="5120" height="1400" />
     </state>
-    <state x="427" y="507" key="FileChooserDialogImpl/0.0.2560.1400@0.0.2560.1400" timestamp="1585085296580" />
-    <state x="127" y="327" key="SettingsEditor" timestamp="1585085304795">
-      <screen x="0" y="0" width="2560" height="1400" />
+    <state x="2706" y="273" width="1427" height="708" key="find.popup/0.0.5120.1400@0.0.5120.1400" timestamp="1597044134888" />
+    <state x="3496" y="360" width="672" height="678" key="search.everywhere.popup" timestamp="1597044242390">
+      <screen x="0" y="0" width="5120" height="1400" />
     </state>
-    <state x="127" y="327" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1585085304795" />
-    <state x="986" y="427" width="773" height="546" key="find.popup" timestamp="1585144847027">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="986" y="427" width="773" height="546" key="find.popup/0.0.2560.1400@0.0.2560.1400" timestamp="1585144847027" />
-    <state x="936" y="353" width="672" height="676" key="search.everywhere.popup" timestamp="1585144830090">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="936" y="353" width="672" height="676" key="search.everywhere.popup/0.0.2560.1400@0.0.2560.1400" timestamp="1585144830090" />
+    <state x="3496" y="360" width="672" height="678" key="search.everywhere.popup/0.0.5120.1400@0.0.5120.1400" timestamp="1597044242390" />
   </component>
 </project>
