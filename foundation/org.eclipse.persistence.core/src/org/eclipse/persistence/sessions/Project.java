@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -192,7 +192,10 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     protected Collection<String> structConverters;
 
     protected boolean allowNullResultMaxMin = true;
-    protected boolean allowResultTypeConversion = false;
+    protected boolean allowConvertResultToBoolean = true;
+
+    /** Force all queries and relationships to use deferred lock strategy during object building and L2 cache population. */
+    protected boolean queryCacheForceDeferredLocks = false;
 
     /**
      * PUBLIC:
@@ -248,6 +251,22 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      */
     public void setDefaultQueryResultsCachePolicy(QueryResultsCachePolicy defaultQueryResultsCachePolicy) {
         this.defaultQueryResultsCachePolicy = defaultQueryResultsCachePolicy;
+    }
+
+    /**
+     * PUBLIC:
+     * Get property to Force all queries and relationships to use deferred lock strategy during object building and L2 cache population.
+     */
+    public boolean isQueryCacheForceDeferredLocks() {
+        return queryCacheForceDeferredLocks;
+    }
+
+    /**
+     * PUBLIC:
+     * Set property to Force all queries and relationships to use deferred lock strategy during object building and L2 cache population.
+     * By default there is false value - use use mixed object cache locking strategy (depends on relationship and fetch type) */
+    public void setQueryCacheForceDeferredLocks(boolean queryCacheForceDeferredLocks) {
+        this.queryCacheForceDeferredLocks = queryCacheForceDeferredLocks;
     }
 
     /**
@@ -1319,8 +1338,8 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * INTERNAL:
      * Return true if ResultSet values should be converted for this project.
      */
-    public boolean allowResultTypeConversion() {
-        return this.allowResultTypeConversion;
+    public boolean allowConvertResultToBoolean() {
+        return this.allowConvertResultToBoolean;
     }
 
     /**
@@ -1390,8 +1409,8 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * INTERNAL:
      * Set whether ResultSet values should be converted for this project.
      */
-    public void setAllowResultTypeConversion(boolean allowResultTypeConversion) {
-        this.allowResultTypeConversion = allowResultTypeConversion;
+    public void setAllowConvertResultToBoolean(boolean allowConvertResultToBoolean) {
+        this.allowConvertResultToBoolean = allowConvertResultToBoolean;
     }
 
     /**

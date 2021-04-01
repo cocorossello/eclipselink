@@ -1,10 +1,176 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="b094e494-0898-47ef-98e6-64b7c5842d26" name="Default Changelist" comment="">
+    <list default="true" id="3eaa9dc4-2ce3-4f3b-9147-732426dde267" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/etc/jenkins/publish_snapshots.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/helper/ConcurrencySemaphore.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/helper/ConcurrencyUtil.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/helper/ExplainDeadLockUtil.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/helper/ReadLockManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/helper/type/CacheKeyToThreadRelationships.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/helper/type/ConcurrencyManagerState.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/helper/type/DeadLockComponent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/helper/type/IsBuildObjectCompleteOutcome.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/helper/type/ReadLockAcquisitionMetadata.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/security/PrivilegedGetThreadInfo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/META-INF/beans.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/embeddable/TestCollectionTableEmbeddable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/embeddable/model/ElementCollectionEmbeddableTemporal.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/embeddable/model/ElementCollectionEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/test/cachedeadlock/CacheDeadLockDetectionTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/test/cachedeadlock/MainThread.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/test/cachedeadlock/cdi/event/EventObserver.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/test/cachedeadlock/cdi/event/EventProducer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/test/cachedeadlock/cdi/event/EventProducerImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/test/cachedeadlock/model/CacheDeadLockDetectionDetail.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/test/cachedeadlock/model/CacheDeadLockDetectionMaster.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/test/property/TestConvertResultToBoolean.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.modelgen/src/org/eclipse/persistence/internal/jpa/modelgen/MessagerLog.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/src/org/eclipse/persistence/testing/jaxb/binder/nullpolicy/Gender.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/about.html" beforeDir="false" afterPath="$PROJECT_DIR$/about.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/antbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/antbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/autobuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/autobuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/autobuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/autobuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buildsystem/compdeps/org.eclipse.persistence.compdeps.p2repo/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/buildsystem/compdeps/org.eclipse.persistence.compdeps.p2repo/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buildsystem/compdeps/org.eclipse.persistence.compdeps/feature.xml" beforeDir="false" afterPath="$PROJECT_DIR$/buildsystem/compdeps/org.eclipse.persistence.compdeps/feature.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buildsystem/compdeps/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/buildsystem/compdeps/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buildsystem/org.eclipse.persistence.parent/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/buildsystem/org.eclipse.persistence.parent/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buildsystem/org.eclipse.persistence.parent/resource/about.html" beforeDir="false" afterPath="$PROJECT_DIR$/buildsystem/org.eclipse.persistence.parent/resource/about.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buildsystem/org.eclipse.persistence.parent/resource/readme.html" beforeDir="false" afterPath="$PROJECT_DIR$/buildsystem/org.eclipse.persistence.parent/resource/readme.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dbws/eclipselink.dbws.test/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/dbws/eclipselink.dbws.test/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dbws/org.eclipse.persistence.dbws/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/dbws/org.eclipse.persistence.dbws/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dbws/org.eclipse.persistence.dbws/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/dbws/org.eclipse.persistence.dbws/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dbws/org.eclipse.persistence.dbws/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/dbws/org.eclipse.persistence.dbws/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/etc/jenkins/build.groovy" beforeDir="false" afterPath="$PROJECT_DIR$/etc/jenkins/build.groovy" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/etc/jenkins/promote.groovy" beforeDir="false" afterPath="$PROJECT_DIR$/etc/jenkins/promote.groovy" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/features/antbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/features/antbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/eclipselink.core.test/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/eclipselink.core.test/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/eclipselink.core.test/src/org/eclipse/persistence/testing/tests/expressions/ExpressionSubSelectTestSuite.java" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/eclipselink.core.test/src/org/eclipse/persistence/testing/tests/expressions/ExpressionSubSelectTestSuite.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/eclipselink.extension.nosql.test/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/eclipselink.extension.nosql.test/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/eclipselink.extension.oracle.nosql.test/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/eclipselink.extension.oracle.nosql.test/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/eclipselink.extension.oracle.spatial.test/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/eclipselink.extension.oracle.spatial.test/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/eclipselink.extension.oracle.test/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/eclipselink.extension.oracle.test/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/eclipselink.extension.test/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/eclipselink.extension.test/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/config/PersistenceUnitProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/config/PersistenceUnitProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/config/SystemProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/config/SystemProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/databaseaccess/DatabaseAccessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/databaseaccess/DatabaseAccessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/descriptors/ObjectBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/descriptors/ObjectBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/helper/ConcurrencyManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/helper/ConcurrencyManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/helper/WriteLockManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/helper/WriteLockManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/identitymaps/CacheKey.java" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/identitymaps/CacheKey.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/localization/i18n/TraceLocalizationResource.java" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/localization/i18n/TraceLocalizationResource.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/oxm/record/XMLStreamReaderReader.java" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/oxm/record/XMLStreamReaderReader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/queries/ExpressionQueryMechanism.java" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/queries/ExpressionQueryMechanism.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/security/PrivilegedAccessHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/security/PrivilegedAccessHelper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/sessions/UnitOfWorkImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/internal/sessions/UnitOfWorkImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/mappings/AggregateCollectionMapping.java" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/mappings/AggregateCollectionMapping.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/queries/ObjectBuildingQuery.java" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/queries/ObjectBuildingQuery.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/queries/ReportQueryResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/queries/ReportQueryResult.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/sessions/Project.java" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/sessions/Project.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.extension/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.extension/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.extension/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.extension/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.extension/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.extension/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.nosql/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.nosql/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.nosql/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.nosql/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.nosql/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.nosql/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle.nosql/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle.nosql/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle.nosql/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle.nosql/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle.nosql/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle.nosql/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle/resource/source-bundle/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle/resource/source-bundle/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/eclipselink.jaxrs.test/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/eclipselink.jaxrs.test/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/antbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/antbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/META-INF/persistence.xml" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/META-INF/persistence.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/returninsert/TestReturnInsert.java" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/returninsert/TestReturnInsert.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/returninsert/model/ReturnInsertDetailJoined.java" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/returninsert/model/ReturnInsertDetailJoined.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/test/conversion/TestJavaTimeTypeConverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/test/conversion/TestJavaTimeTypeConverter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/test/modelgen/TestProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/test/modelgen/TestProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/test/query/TestQueryCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test.jse/src/org/eclipse/persistence/jpa/test/query/TestQueryCase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/eclipselink.jpa.test/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/eclipselink.jpa.test/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/eclipselink.jpars.test/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/eclipselink.jpars.test/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.jpql.test/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.jpql.test/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.jpql.test/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.jpql.test/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.jpql/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.jpql/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.jpql/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.jpql/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.jpql/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.jpql/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.modelgen/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.modelgen/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.modelgen/src/org/eclipse/persistence/internal/jpa/modelgen/CanonicalModelProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.modelgen/src/org/eclipse/persistence/internal/jpa/modelgen/CanonicalModelProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.modelgen/src/org/eclipse/persistence/internal/jpa/modelgen/CanonicalModelProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.modelgen/src/org/eclipse/persistence/internal/jpa/modelgen/CanonicalModelProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.modelgen/src/org/eclipse/persistence/internal/jpa/modelgen/LoggerContext.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.modelgen/src/org/eclipse/persistence/internal/jpa/modelgen/MetadataMirrorFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.modelgen/src/org/eclipse/persistence/internal/jpa/modelgen/MetadataMirrorFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.modelgen/src/org/eclipse/persistence/internal/jpa/modelgen/objects/PersistenceUnit.java" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.modelgen/src/org/eclipse/persistence/internal/jpa/modelgen/objects/PersistenceUnit.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.modelgen/src/org/eclipse/persistence/internal/jpa/modelgen/objects/PersistenceUnitReader.java" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.modelgen/src/org/eclipse/persistence/internal/jpa/modelgen/objects/PersistenceUnitReader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.modelgen/src/org/eclipse/persistence/internal/jpa/modelgen/visitors/AnnotationValueVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.modelgen/src/org/eclipse/persistence/internal/jpa/modelgen/visitors/AnnotationValueVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.modelgen/src/org/eclipse/persistence/internal/jpa/modelgen/visitors/ElementVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.modelgen/src/org/eclipse/persistence/internal/jpa/modelgen/visitors/ElementVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.modelgen/src/org/eclipse/persistence/internal/jpa/modelgen/visitors/TypeVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa.modelgen/src/org/eclipse/persistence/internal/jpa/modelgen/visitors/TypeVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa/src/org/eclipse/persistence/internal/jpa/EntityManagerSetupImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa/src/org/eclipse/persistence/internal/jpa/EntityManagerSetupImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa/src/org/eclipse/persistence/internal/jpa/metadata/accessors/objects/MetadataAsmFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa/src/org/eclipse/persistence/internal/jpa/metadata/accessors/objects/MetadataAsmFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpars/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpars/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpars/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpars/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpars/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpars/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mis_instrucciones.txt" beforeDir="false" afterPath="$PROJECT_DIR$/mis_instrucciones.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/resource/org/eclipse/persistence/testing/jaxb/binder/nullpolicy/emptynode.xml" beforeDir="false" afterPath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/resource/org/eclipse/persistence/testing/jaxb/binder/nullpolicy/emptynode.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/resource/org/eclipse/persistence/testing/jaxb/binder/nullpolicy/nilwithvalue.xml" beforeDir="false" afterPath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/resource/org/eclipse/persistence/testing/jaxb/binder/nullpolicy/nilwithvalue.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/resource/org/eclipse/persistence/testing/jaxb/binder/nullpolicy/xsinil.xml" beforeDir="false" afterPath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/resource/org/eclipse/persistence/testing/jaxb/binder/nullpolicy/xsinil.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/src/org/eclipse/persistence/testing/jaxb/binder/nullpolicy/BinderWithNullPolicyTestCases.java" beforeDir="false" afterPath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/src/org/eclipse/persistence/testing/jaxb/binder/nullpolicy/BinderWithNullPolicyTestCases.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/src/org/eclipse/persistence/testing/jaxb/binder/nullpolicy/EmployeeA.java" beforeDir="false" afterPath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/src/org/eclipse/persistence/testing/jaxb/binder/nullpolicy/EmployeeA.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/src/org/eclipse/persistence/testing/jaxb/binder/nullpolicy/EmployeeB.java" beforeDir="false" afterPath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/src/org/eclipse/persistence/testing/jaxb/binder/nullpolicy/EmployeeB.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/src/org/eclipse/persistence/testing/jaxb/binder/nullpolicy/EmployeeC.java" beforeDir="false" afterPath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/src/org/eclipse/persistence/testing/jaxb/binder/nullpolicy/EmployeeC.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moxy/org.eclipse.persistence.moxy.dynamicxjc/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/moxy/org.eclipse.persistence.moxy.dynamicxjc/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moxy/org.eclipse.persistence.moxy/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/moxy/org.eclipse.persistence.moxy/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moxy/org.eclipse.persistence.moxy/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/moxy/org.eclipse.persistence.moxy/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moxy/org.eclipse.persistence.moxy/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/moxy/org.eclipse.persistence.moxy/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moxy/org.eclipse.persistence.moxy/src/org/eclipse/persistence/jaxb/compiler/MappingsGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/moxy/org.eclipse.persistence.moxy/src/org/eclipse/persistence/jaxb/compiler/MappingsGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/performance/eclipselink.perf.test/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/performance/eclipselink.perf.test/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml.template" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml.template" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/readme.html" beforeDir="false" afterPath="$PROJECT_DIR$/readme.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sdo/eclipselink.sdo.test/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/sdo/eclipselink.sdo.test/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sdo/org.eclipse.persistence.sdo/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/sdo/org.eclipse.persistence.sdo/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sdo/org.eclipse.persistence.sdo/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/sdo/org.eclipse.persistence.sdo/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sdo/org.eclipse.persistence.sdo/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sdo/org.eclipse.persistence.sdo/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploadToMaven.xml" beforeDir="false" afterPath="$PROJECT_DIR$/uploadToMaven.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/uploadToNexus.xml" beforeDir="false" afterPath="$PROJECT_DIR$/uploadToNexus.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.dbws.builder.test.oracle.server/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.dbws.builder.test.oracle.server/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.dbws.builder.test.oracle/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.dbws.builder.test.oracle/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.dbws.builder.test/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.dbws.builder.test/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.utils.jaxb/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.utils.jaxb/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.utils.workbench.test/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.utils.workbench.test/build.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.utils.workbench.test/framework/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.utils.workbench.test/framework/build.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.utils.workbench.test/mappingsplugin/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.utils.workbench.test/mappingsplugin/build.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.utils.workbench.test/platformsplugin/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.utils.workbench.test/platformsplugin/build.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.utils.workbench.test/scplugin/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.utils.workbench.test/scplugin/build.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.utils.workbench.test/uitools/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.utils.workbench.test/uitools/build.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.utils.workbench.test/utility/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.utils.workbench.test/utility/build.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/build.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/framework/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/framework/build.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/iconlib/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/iconlib/build.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/mappingsio/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/mappingsio/build.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/mappingsmodel/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/mappingsmodel/build.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/mappingsplugin/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/mappingsplugin/build.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/platformsmodel/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/platformsmodel/build.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/platformsplugin/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/platformsplugin/build.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/scplugin/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/scplugin/build.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/uitools/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/uitools/build.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/utility/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/eclipselink.utils.workbench/utility/build.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/org.eclipse.persistence.dbws.builder/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/utils/org.eclipse.persistence.dbws.builder/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/org.eclipse.persistence.dbws.builder/antbuild.properties" beforeDir="false" afterPath="$PROJECT_DIR$/utils/org.eclipse.persistence.dbws.builder/antbuild.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/org.eclipse.persistence.dbws.builder/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/utils/org.eclipse.persistence.dbws.builder/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -12,60 +178,80 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectId" id="1TtpHDUy9xe7lRs9iif57tcfLIX" />
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="ProjectId" id="1qJ7uy8BQKjGVimG5IHsK9Zmubk" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="Git.Branch.Popup.ShowAllRemotes" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
-    <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.path.for.package.tslint" value="project" />
-    <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="project.structure.last.edited" value="Project" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="project.structure.last.edited" value="SDKs" />
     <property name="project.structure.proportion" value="0.15" />
-    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="settings.editor.selected.configurable" value="MavenSettings" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
-  <component name="SvnConfiguration">
-    <configuration />
-  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="b094e494-0898-47ef-98e6-64b7c5842d26" name="Default Changelist" comment="" />
-      <created>1540499796581</created>
+      <changelist id="3eaa9dc4-2ce3-4f3b-9147-732426dde267" name="Default Changelist" comment="" />
+      <created>1616786065696</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1540499796581</updated>
-      <workItem from="1540499797916" duration="393000" />
-      <workItem from="1546034118654" duration="23000" />
-      <workItem from="1574289161534" duration="1134000" />
-      <workItem from="1585076725860" duration="1994000" />
-      <workItem from="1585080157986" duration="3981000" />
-      <workItem from="1585765796510" duration="1881000" />
-      <workItem from="1597216119235" duration="2375000" />
-      <workItem from="1603988157533" duration="718000" />
+      <updated>1616786065696</updated>
+      <workItem from="1616786066870" duration="255000" />
+      <workItem from="1616786341836" duration="2465000" />
+      <workItem from="1616962983004" duration="595000" />
+      <workItem from="1617138609417" duration="15000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
-  <component name="WindowStateProjectService">
-    <state x="2706" y="273" width="1427" height="708" key="find.popup" timestamp="1597044134888">
-      <screen x="0" y="0" width="5120" height="1400" />
-    </state>
-    <state x="2706" y="273" width="1427" height="708" key="find.popup/0.0.5120.1400@0.0.5120.1400" timestamp="1597044134888" />
-    <state x="3496" y="360" width="672" height="678" key="search.everywhere.popup" timestamp="1597044242390">
-      <screen x="0" y="0" width="5120" height="1400" />
-    </state>
-    <state x="3496" y="360" width="672" height="678" key="search.everywhere.popup/0.0.5120.1400@0.0.5120.1400" timestamp="1597044242390" />
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ID_ORDER">
+      <list>
+        <option value="Default.Root" />
+        <option value="Default.Author" />
+        <option value="Default.Date" />
+        <option value="Default.Subject" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
 </project>
