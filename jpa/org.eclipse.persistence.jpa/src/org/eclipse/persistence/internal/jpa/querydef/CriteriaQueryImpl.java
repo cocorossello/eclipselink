@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +31,7 @@ import javax.persistence.criteria.Selection;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.Type.PersistenceType;
 
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
@@ -78,8 +80,8 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      */
     @Override
     public CriteriaQuery<T> select(Selection<? extends T> selection) {
-        findRootAndParameters(selection);
         this.selection = (SelectionImpl) selection;
+        this.selection.findRootAndParameters(this);
         if (selection.isCompoundSelection()) {
             //bug 366386: validate that aliases are not reused
             if (this.selection.isCompoundSelection() && ((CompoundSelectionImpl)this.selection).getDuplicateAliasNames() != null) {
@@ -159,7 +161,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             return this;
         }
         for (Selection select : selections) {
-            findRootAndParameters(select);
+            ((SelectionImpl)select).findRootAndParameters(this);
         }
         if (this.queryResult == ResultType.CONSTRUCTOR) {
             populateAndSetConstructorSelection(null, this.queryType, selections);
@@ -548,14 +550,41 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     }
                 }
             }
-            if (this.where != null && ((InternalSelection) this.where).getCurrentNode() != null  &&
-                    ((InternalSelection) this.where).getCurrentNode().getBuilder().getQueryClass() != null) {
-                reportQuery.setReferenceClass(((InternalSelection) this.where).getCurrentNode().getBuilder().getQueryClass());
-                reportQuery.setExpressionBuilder(((InternalSelection) this.where).getCurrentNode().getBuilder());
-            } else {
-                reportQuery.setExpressionBuilder(((InternalSelection) this.selection.getCompoundSelectionItems().get(0)).getCurrentNode().getBuilder());
-                reportQuery.setReferenceClass(((InternalSelection) this.selection.getCompoundSelectionItems().get(0)).getCurrentNode().getBuilder().getQueryClass());
+
+            ExpressionBuilder builder = null;
+            Class<?> queryClazz = null;
+            // First check the WHERE clause
+            if(this.where != null && ((InternalSelection) this.where).getCurrentNode() != null) {
+                builder = ((InternalSelection) this.where).getCurrentNode().getBuilder();
+                queryClazz = builder.getQueryClass();
             }
+            // Check all the SELECTION items next
+            if(queryClazz == null && this.selection != null) {
+                for(Selection<?> s : this.selection.getCompoundSelectionItems()) {
+                    if(((InternalSelection) s).getCurrentNode() != null ) {
+                        builder = ((InternalSelection) s).getCurrentNode().getBuilder();
+                        queryClazz = builder.getQueryClass();
+                        if(queryClazz != null) {
+                            break;
+                        }
+                    }
+                }
+            }
+            // Fallback on the root
+            if(queryClazz == null && this.roots != null) {
+                for(Root<?> r : this.roots) {
+                    if(((RootImpl<?>) r).getCurrentNode() != null ) {
+                        builder = ((RootImpl<?>) r).getCurrentNode().getBuilder();
+                        queryClazz = builder.getQueryClass();
+                        if(queryClazz != null) {
+                            break;
+                        }
+                    }
+                }
+            }
+            reportQuery.setExpressionBuilder(builder);
+            reportQuery.setReferenceClass(queryClazz);
+
             query = reportQuery;
             if (this.groupBy != null && !this.groupBy.isEmpty()) {
                 for (Expression<?> exp : this.groupBy) {

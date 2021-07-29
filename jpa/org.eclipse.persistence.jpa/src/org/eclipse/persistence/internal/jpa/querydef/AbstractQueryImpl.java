@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,6 @@ import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
@@ -113,13 +112,13 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * @return the modified query
      */
     @Override
-    public AbstractQuery<T> having(Expression<Boolean> restriction){
-        if (((InternalExpression)restriction).isCompoundExpression() || ((InternalExpression)restriction).isPredicate()){
+    public AbstractQuery<T> having(Expression<Boolean> restriction) {
+        findRootAndParameters(restriction);
+        if (((InternalExpression)restriction).isCompoundExpression() || ((InternalExpression)restriction).isPredicate()) {
             this.havingClause = (Predicate) restriction;
-        }else{
+        } else {
             this.havingClause = queryBuilder.isTrue(restriction);
         }
-
         return this;
     }
 
@@ -140,6 +139,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
             for (Predicate predicate : restrictions) {
                 conjunction = this.queryBuilder.and(conjunction, predicate);
             }
+            findRootAndParameters(conjunction);
             this.havingClause = conjunction;
         }
         return this;
@@ -239,14 +239,6 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
 
     protected void findJoins(FromImpl root) {
         root.findJoins(this);
-    }
-
-    protected void findRootAndParameters(Selection<?> selection) {
-        if (selection.isCompoundSelection()) {
-            for (Selection subSelection : selection.getCompoundSelectionItems()) {
-                findRootAndParameters(subSelection);
-            }
-        }
     }
 
     /**
