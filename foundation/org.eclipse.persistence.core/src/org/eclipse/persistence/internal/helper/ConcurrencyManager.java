@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +15,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.helper;
 
-import java.io.*;
+import java.io.Serializable;
+import java.io.StringWriter;
 import java.security.AccessController;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,12 +24,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.persistence.config.SystemProperties;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.localization.*;
+import org.eclipse.persistence.exceptions.ConcurrencyException;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
+import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
-import org.eclipse.persistence.logging.*;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * INTERNAL:
@@ -78,8 +82,13 @@ public class ConcurrencyManager implements Serializable {
     private static final Map<Thread, String> THREADS_TO_WAIT_ON_ACQUIRE_NAME_OF_METHOD_CREATING_TRACE = new ConcurrentHashMap<>();
     // Holds as a keys threads that needed to acquire one or more read locks on different cache keys.
     private static final Map<Thread, ReadLockManager> READ_LOCK_MANAGERS = new ConcurrentHashMap<>();
-    private static final Set<Thread> THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS = new HashSet<>();
+    private static final Set<Thread> THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS = ConcurrentHashMap.newKeySet();
     private static final Map<Thread, String> THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS_BUILD_OBJECT_COMPLETE_GOES_NOWHERE = new ConcurrentHashMap<>();
+
+    private static final String ACQUIRE_METHOD_NAME = ConcurrencyManager.class.getName() + ".acquire(...)";
+    private static final String ACQUIRE_READ_LOCK_METHOD_NAME = ConcurrencyManager.class.getName() + ".acquireReadLock(...)";
+    private static final String ACQUIRE_WITH_WAIT_METHOD_NAME = ConcurrencyManager.class.getName() + ".acquireWithWait(...)";
+    private static final String ACQUIRE_DEFERRED_LOCK_METHOD_NAME = ConcurrencyManager.class.getName() + ".acquireDeferredLock(...)";
 
     /**
      * Initialize the newly allocated instance of this class.
@@ -118,8 +127,7 @@ public class ConcurrencyManager implements Serializable {
         // is just storing debug metadata that we can use when we detect the system is frozen in a dead lock
         final boolean currentThreadWillEnterTheWhileWait = ((this.activeThread != null) || (this.numberOfReaders.get() > 0)) && (this.activeThread != currentThread);
         if(currentThreadWillEnterTheWhileWait) {
-            StackTraceElement stackTraceElement = currentThread.getStackTrace()[1];
-            putThreadAsWaitingToAcquireLockForWriting(currentThread, stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName() + "(...)");
+            putThreadAsWaitingToAcquireLockForWriting(currentThread, ACQUIRE_METHOD_NAME);
         }
         while (((this.activeThread != null) || (this.numberOfReaders.get() > 0)) && (this.activeThread != Thread.currentThread())) {
             // This must be in a while as multiple threads may be released, or another thread may rush the acquire after one is released.
@@ -197,15 +205,15 @@ public class ConcurrencyManager implements Serializable {
             return true;
         } else {
             try {
-                StackTraceElement stackTraceElement = currentThread.getStackTrace()[1];
-                putThreadAsWaitingToAcquireLockForWriting(currentThread, stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName() + "(...)");
+                putThreadAsWaitingToAcquireLockForWriting(currentThread, ACQUIRE_WITH_WAIT_METHOD_NAME);
                 wait(wait);
             } catch (InterruptedException e) {
                 return false;
             } finally {
                 removeThreadNoLongerWaitingToAcquireLockForWriting(currentThread);
             }
-            if ((this.activeThread == null && this.numberOfReaders.get() == 0) || (this.activeThread == currentThread)) {
+            if ((this.activeThread == null && this.numberOfReaders.get() == 0)
+                    || (this.activeThread == currentThread)) {
                 acquire(forMerge);
                 return true;
             }
@@ -246,8 +254,7 @@ public class ConcurrencyManager implements Serializable {
             final long whileStartTimeMillis = System.currentTimeMillis();
             final boolean currentThreadWillEnterTheWhileWait = this.numberOfReaders.get() != 0;
             if(currentThreadWillEnterTheWhileWait) {
-                StackTraceElement stackTraceElement = currentThread.getStackTrace()[1];
-                putThreadAsWaitingToAcquireLockForWriting(currentThread, stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName() + "(...)");
+                putThreadAsWaitingToAcquireLockForWriting(currentThread, ACQUIRE_DEFERRED_LOCK_METHOD_NAME);
             }
             while (this.numberOfReaders.get() != 0) {
                 // There are readers of this object, wait until they are done before determining if
@@ -323,8 +330,7 @@ public class ConcurrencyManager implements Serializable {
         ReadLockManager readLockManager = getReadLockManager(currentThread);
         final boolean currentThreadWillEnterTheWhileWait = (this.activeThread != null) && (this.activeThread != currentThread);
         if (currentThreadWillEnterTheWhileWait) {
-            StackTraceElement stackTraceElement = currentThread.getStackTrace()[1];
-            putThreadAsWaitingToAcquireLockForReading(currentThread, stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName() + "(...)");
+            putThreadAsWaitingToAcquireLockForReading(currentThread, ACQUIRE_READ_LOCK_METHOD_NAME);
         }
         // Cannot check for starving writers as will lead to deadlocks.
         while ((this.activeThread != null) && (this.activeThread != Thread.currentThread())) {
@@ -373,7 +379,7 @@ public class ConcurrencyManager implements Serializable {
      * Return the deferred lock manager from the thread
      */
     public static DeferredLockManager getDeferredLockManager(Thread thread) {
-        return (thread == null) ? null : getDeferredLockManagers().get(thread);
+        return getDeferredLockManagers().get(thread);
     }
 
     /**
@@ -456,7 +462,8 @@ public class ConcurrencyManager implements Serializable {
         }
 
         Vector deferredLocks = lockManager.getDeferredLocks();
-        for (Enumeration deferredLocksEnum = deferredLocks.elements(); deferredLocksEnum.hasMoreElements();) {
+        for (Enumeration deferredLocksEnum = deferredLocks.elements();
+             deferredLocksEnum.hasMoreElements();) {
             ConcurrencyManager deferedLock = (ConcurrencyManager)deferredLocksEnum.nextElement();
             Thread activeThread = null;
             if (deferedLock.isAcquired()) {
@@ -806,6 +813,7 @@ public class ConcurrencyManager implements Serializable {
     /**
      * Print the nested depth.
      */
+    @Override
     public String toString() {
         Object[] args = { Integer.valueOf(getDepth()) };
         return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("nest_level", args);
@@ -850,7 +858,16 @@ public class ConcurrencyManager implements Serializable {
      *
      */
     public void putThreadAsWaitingToAcquireLockForWriting(Thread thread, String methodName) {
+        THREADS_TO_WAIT_ON_ACQUIRE.put(thread, this);
         THREADS_TO_WAIT_ON_ACQUIRE_NAME_OF_METHOD_CREATING_TRACE.put(thread, methodName);
+    }
+
+    /**
+     * The thread has acquired the lock for writing or decided to defer acquiring the lock putting this lock into its
+     * deferred lock list.
+     */
+    public void removeThreadNoLongerWaitingToAcquireLockForWriting(Thread thread) {
+        THREADS_TO_WAIT_ON_ACQUIRE.remove(thread);
         THREADS_TO_WAIT_ON_ACQUIRE_NAME_OF_METHOD_CREATING_TRACE.remove(thread);
     }
 
@@ -869,14 +886,6 @@ public class ConcurrencyManager implements Serializable {
     public void removeThreadNoLongerWaitingToAcquireLockForReading(Thread thread) {
         THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK.remove(thread);
         THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK_NAME_OF_METHOD_CREATING_TRACE.remove(thread);
-    }
-
-    /**
-     * The thread has acquired the lock for writing or decided to defer acquiring the lock putting this lock into its
-     * deferred lock list.
-     */
-    public void removeThreadNoLongerWaitingToAcquireLockForWriting(Thread thread) {
-        THREADS_TO_WAIT_ON_ACQUIRE.remove(thread);
     }
 
     /** Getter for {@link #concurrencyManagerId} */
@@ -980,10 +989,7 @@ public class ConcurrencyManager implements Serializable {
         Map<Thread, ReadLockManager> readLockManagers = getReadLockManagers();
         if (!readLockManagers.containsKey(thread)) {
             ReadLockManager  readLockManager = new ReadLockManager();
-            ReadLockManager value = readLockManagers.get(thread);
-            if (value == null) {
-                readLockManagers.put(thread, readLockManager);
-            }
+            readLockManagers.putIfAbsent(thread, readLockManager);
             return readLockManager;
         }
         return readLockManagers.get(thread);
