@@ -133,8 +133,21 @@ public class BeanValidationListener extends DescriptorEventAdapter {
     }
 
     public static String getPrettyMessage(ConstraintViolation<?> constraint) {
-        if (constraint.getPropertyPath() != null) {
-            return constraint.getPropertyPath() + ":" + constraint.getMessage();
+        var className = constraint.getRootBeanClass() == null ? "" : constraint.getRootBeanClass().getSimpleName() + ".";
+        if (constraint.getPropertyPath() != null && constraint.getRootBean() != null) {
+            var beanDescription = "";
+            try {
+                beanDescription = constraint.getRootBean().toString();
+                if (beanDescription.length() > 100) {
+                    beanDescription = beanDescription.substring(0, 100) + "...";
+                }
+            } catch (Exception e) {
+                System.err.println("Error while getting bean description of " + className);
+            }
+            return className + constraint.getPropertyPath() + ":" + constraint.getMessage() + " (" + beanDescription + ")";
+        } else if (constraint.getPropertyPath() != null) {
+
+            return className + constraint.getPropertyPath() + ":" + constraint.getMessage();
         } else {
             return constraint.getMessage();
         }
