@@ -528,11 +528,11 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
         // Should only run through this once ...
         if (keyName != null && keyMethod == null && keyField == null) {
             try {
-                keyMethod = Helper.getDeclaredMethod(elementClass, keyName, (Class[]) null);
-            } catch (NoSuchMethodException ex) {
+                keyField = Helper.getField(elementClass, keyName);
+            } catch (NoSuchFieldException ex) {
                 try {
-                    keyField = Helper.getField(elementClass, keyName);
-                } catch (NoSuchFieldException e) {
+                    keyMethod = Helper.getDeclaredMethod(elementClass, keyName, (Class[]) null);
+                } catch (NoSuchMethodException e) {
                     throw ValidationException.mapKeyNotDeclaredInItemClass(keyName, elementClass);
                 }
             }
