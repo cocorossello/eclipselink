@@ -133,9 +133,9 @@ public class BeanValidationListener extends DescriptorEventAdapter {
     }
 
     public static String getPrettyMessage(ConstraintViolation<?> constraint) {
-        var className = constraint.getRootBeanClass() == null ? "" : constraint.getRootBeanClass().getSimpleName() + ".";
+        String className = constraint.getRootBeanClass() == null ? "" : constraint.getRootBeanClass().getSimpleName() + ".";
         if (constraint.getPropertyPath() != null && constraint.getRootBean() != null) {
-            var beanDescription = "";
+            String beanDescription = "";
             try {
                 beanDescription = constraint.getRootBean().toString();
                 if (beanDescription.length() > 100) {
