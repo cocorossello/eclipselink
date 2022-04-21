@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2022 Contributors to the Eclipse Foundation
+# Copyright (c) 2021 Contributors to the Eclipse Foundation
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v. 2.0 which is available at
@@ -10,51 +10,64 @@
 # SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
 #
 
-name: EclipseLink build (2.7.x)
+# For most projects, this workflow file will not need changing; you simply need
+# to commit it to your repository.
+#
+# You may wish to alter this file to override the set of languages analyzed,
+# or to provide custom queries or build logic.
+name: "CodeQL"
 
 on:
   push:
-    branches: [ '2.7' ]
+    branches: [2.7]
   pull_request:
-    branches: [ '2.7' ]
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+    # The branches below must be a subset of the branches above
+    branches: [2.7]
+  schedule:
+    - cron: '0 19 * * 1'
+
 jobs:
-  build:
-    name: Test on JDK ${{ matrix.java_version }}
+  analyze:
+    name: Analyze
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
-        java_version: [ 11 ]
+        # Override automatic language detection by changing the below list
+        # Supported options are ['csharp', 'cpp', 'go', 'java', 'javascript', 'python']
+        language: ['java']
+        # Learn more...
+        # https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#overriding-automatic-language-detection
 
     steps:
-      - name: Cancel previous runs of this workflow
-        uses: styfle/cancel-workflow-action@0.9.1
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
         with:
-          all_but_latest: true
-          access_token: ${{ github.token }}
-      - name: Start MySQL Database
-        run: |
-          sudo systemctl start mysql.service
-          mysql -e 'SET GLOBAL log_bin_trust_function_creators = 1;' -uroot -proot
-          mysql -e 'CREATE DATABASE ecltests;' -uroot -proot
-          mysql -e 'SHOW DATABASES;' -uroot -proot
-      - name: Cache local Maven repository
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-      - name: Checkout for build
-        uses: actions/checkout@v2.3.4
-      - name: Set up JDK
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'zulu'
-          java-version: ${{ matrix.java_version }}
-      - name: Init
+          languages: ${{ matrix.language }}
+          config-file: ./.github/codeql/codeql-config.yml
+          # If you wish to specify custom queries, you can do so here or in a config file.
+          # By default, queries listed here will override any specified in a config file.
+          # Prefix the list here with "+" to use these queries and those in the config file.
+          # queries: ./path/to/local/query, your-org/your-repo/queries@main
+
+      # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
+      # If this step fails, then you should remove it and run the build manually (see below)
+      #- name: Autobuild
+      #  uses: github/codeql-action/autobuild@v1
+
+      # ℹ️ Command-line programs to run using the OS shell.
+      # 📚 https://git.io/JvXDl
+
+      # ✏️ If the Autobuild fails above, remove it and uncomment the following three lines
+      #    and modify them (or add more) to build your code if your project
+      #    uses a compiled language
+
+      - name: Build
         run: |
           mkdir $HOME/extension.lib.external
           wget -nc https://repo1.maven.org/maven2/junit/junit/4.12/junit-4.12.jar -O $HOME/extension.lib.external/junit-4.12.jar
@@ -77,11 +90,8 @@ jobs:
           echo 'db.pwd=root' >> $HOME/build.properties
           echo 'db.platform=org.eclipse.persistence.platform.database.MySQLPlatform' >> $HOME/build.properties
           echo "eclipse.install.dir=$HOME/extension.lib.external/eclipse" >> $HOME/build.properties
-      - name: Build
-        run: |
           export M2_HOME=/usr/share/apache-maven-3.8.5
           ant -f antbuild.xml build
-      - name: Verify
-        run: |
-          export M2_HOME=/usr/share/apache-maven-3.8.5
-          ant -f antbuild.xml -Dtest.fail.fast=true -Dfail.on.error=true test-lrg
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
