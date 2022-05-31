@@ -59,6 +59,7 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
         this.type = type;
     }
 
+    @Override
     public BatchFetchPolicy clone() {
         BatchFetchPolicy clone = null;
         try {
@@ -66,12 +67,15 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
         } catch (CloneNotSupportedException error) {
             throw new InternalError(error.getMessage());
         }
-        if (clone.dataResults != null) {
-            clone.dataResults.put(clone, clone.dataResults.get(this));
+
+        Map<Object, List<AbstractRecord>> dataResults = new HashMap<Object, List<AbstractRecord>>();
+        if (this.dataResults != null && this.dataResults.containsKey(this)) {
+            List<AbstractRecord> list = new ArrayList<AbstractRecord>(this.dataResults.get(this));
+            dataResults.put(clone, list);
         }
+        clone.setDataResults(dataResults);
         return clone;
     }
-
     /**
      * Return if using the IN fetch type.
      */
