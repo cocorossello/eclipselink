@@ -1326,7 +1326,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Add an event to the deferred list.  Events will be fired after the operation completes
      */
     public void deferEvent(DescriptorEvent event){
-        synchronized (this) {
+        synchronized (this.deferredEvents) {
             this.deferredEvents.add(event);
         }
     }
