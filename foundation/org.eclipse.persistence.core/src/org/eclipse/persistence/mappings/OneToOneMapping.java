@@ -765,7 +765,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         // Force a distinct to filter out m-1 duplicates.
         // Only set if really a m-1, not a 1-1
         if (!this.isOneToOneRelationship && ((ObjectLevelReadQuery)batchQuery).getBatchFetchPolicy().isJOIN()) {
-            if (!((ObjectLevelReadQuery)batchQuery).isDistinctComputed() && (batchQuery.getSession().getPlatform().isLobCompatibleWithDistinct() || !Helper.hasLob(batchQuery.getDescriptor().getSelectionFields((ObjectLevelReadQuery)batchQuery)))) {
+            if (batchQuery.getSession().getPlatform().isLobCompatibleWithDistinct() || !Helper.hasLob(batchQuery.getDescriptor().getSelectionFields((ObjectLevelReadQuery)batchQuery))) {
                 ((ObjectLevelReadQuery)batchQuery).useDistinct();
             }
         }
@@ -807,12 +807,15 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     protected void executeBatchQuery(DatabaseQuery query, CacheKey parentCacheKey, Map referenceObjectsByKey, AbstractSession session, AbstractRecord translationRow) {
         // Execute query and index resulting objects by key.
         List results;
+        boolean isBatchFetchFromPaginatedQuery = !referenceObjectsByKey.isEmpty() && translationRow.containsKey("EclipseLink-MaxResults"); //Vrossello
         ObjectBuilder builder = query.getDescriptor().getObjectBuilder();
         if (this.mechanism == null) {
             results = (List)session.executeQuery(query, translationRow);
             for (Object eachReferenceObject : results) {
                 Object eachReferenceKey = extractKeyFromReferenceObject(eachReferenceObject, session);
-                referenceObjectsByKey.put(eachReferenceKey, builder.wrapObject(eachReferenceObject, session));
+                if (!isBatchFetchFromPaginatedQuery || referenceObjectsByKey.containsKey(eachReferenceKey)) {                //Vrossello: evitamos poner basura en este mapa
+                    referenceObjectsByKey.put(eachReferenceKey, builder.wrapObject(eachReferenceObject, session));
+                }
             }
         } else {
             ComplexQueryResult complexResult = (ComplexQueryResult)session.executeQuery(query, translationRow);
