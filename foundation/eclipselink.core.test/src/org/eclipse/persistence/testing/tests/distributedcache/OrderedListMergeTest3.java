@@ -66,9 +66,9 @@ public class OrderedListMergeTest3 extends OrderedListMergeTest {
 
         try {
             //wait till we are sure the other session is ready to merge
-            while (semaphore.getNumberOfWritersWaiting() == 0) {
-                Thread.sleep(10);
-            }
+            //while (semaphore.getNumberOfWritersWaiting() == 0) {
+            //    Thread.sleep(10);
+            //}
         } catch (Exception e) {
             throw new TestErrorException("Error while getting Thread to sleep", e);
         }

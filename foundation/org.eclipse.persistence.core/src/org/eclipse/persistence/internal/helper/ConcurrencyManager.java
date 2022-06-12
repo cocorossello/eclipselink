@@ -56,25 +56,25 @@ public class ConcurrencyManager implements Serializable {
 
     protected AtomicInteger numberOfReaders;
     protected AtomicInteger depth;
-    protected AtomicInteger numberOfWritersWaiting;
+    //protected AtomicInteger numberOfWritersWaiting;
     protected volatile transient Thread activeThread;
 
     protected boolean lockedByMergeManager;
-    protected Exception stack;
+    //protected Exception stack;
 
     // Extended logging info fields
     // Unique ID assigned each time when a new instance of a concurrency manager is created
     private final long concurrencyManagerId = CONCURRENCY_MANAGER_ID.incrementAndGet();
     // Creation date
-    private final Date concurrencyManagerCreationDate = new Date();
+    //private final Date concurrencyManagerCreationDate = new Date();
     // In case if two threads are working on the exact same entity that leads to both threads wanting to release the same cache key
     // there is tracking each increment of number of readers and their release.
-    private final AtomicLong totalNumberOfKeysAcquiredForReading = new AtomicLong(0);
+    //private final AtomicLong totalNumberOfKeysAcquiredForReading = new AtomicLong(0);
     // Same as totalNumberOfKeysAcquiredForReading but incremented each time the cache key is suffering to release cache key.
-    private final AtomicLong totalNumberOfKeysReleasedForReading = new AtomicLong(0);
+    //private final AtomicLong totalNumberOfKeysReleasedForReading = new AtomicLong(0);
     // Total number of times the cache key caused a blow up because it suffered a release of cache key when the counter
     // was set to 0. It should happen if an entity being shared by two threads.
-    private final AtomicLong totalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero = new AtomicLong(0);
+   // private final AtomicLong totalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero = new AtomicLong(0);
 
     private static final Map<Thread, ConcurrencyManager> THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK = new ConcurrentHashMap<>();
     private static final Map<Thread, String> THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK_NAME_OF_METHOD_CREATING_TRACE = new ConcurrentHashMap<>();
@@ -97,7 +97,7 @@ public class ConcurrencyManager implements Serializable {
     public ConcurrencyManager() {
         this.depth  = new AtomicInteger(0);
         this.numberOfReaders = new AtomicInteger(0);
-        this.numberOfWritersWaiting = new AtomicInteger(0);
+        //this.numberOfWritersWaiting = new AtomicInteger(0);
     }
 
     /**
@@ -132,7 +132,7 @@ public class ConcurrencyManager implements Serializable {
         while (((this.activeThread != null) || (this.numberOfReaders.get() > 0)) && (this.activeThread != Thread.currentThread())) {
             // This must be in a while as multiple threads may be released, or another thread may rush the acquire after one is released.
             try {
-                this.numberOfWritersWaiting.incrementAndGet();
+                //this.numberOfWritersWaiting.incrementAndGet();
                 wait(ConcurrencyUtil.SINGLETON.getAcquireWaitTime());
                 // Run a method that will fire up an exception if we having been sleeping for too long
                 ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartTimeMillis, lockManager, readLockManager, ConcurrencyUtil.SINGLETON.isAllowInterruptedExceptionFired());
@@ -149,7 +149,7 @@ public class ConcurrencyManager implements Serializable {
                 // Since above we increments the number of writers
                 // whether or not the thread is exploded by an interrupt
                 // we need to make sure we decrement the number of writer to not allow the code to be corrupted
-                this.numberOfWritersWaiting.decrementAndGet();
+                //this.numberOfWritersWaiting.decrementAndGet();
             }
         } // end of while loop
         // Waiting to acquire cache key is is over
@@ -159,7 +159,7 @@ public class ConcurrencyManager implements Serializable {
         if (this.activeThread == null) {
             this.activeThread = Thread.currentThread();
             if (shouldTrackStack){
-                this.stack = new Exception();
+                //this.stack = new Exception();
             }
         }
         this.lockedByMergeManager = forMerge;
@@ -264,7 +264,7 @@ public class ConcurrencyManager implements Serializable {
                 //we could make the readers get a hard lock, but then we would just build a deferred lock even though
                 //the object is not being built.
                 try {
-                    this.numberOfWritersWaiting.incrementAndGet();
+                    //this.numberOfWritersWaiting.incrementAndGet();
                     wait(ConcurrencyUtil.SINGLETON.getAcquireWaitTime());
                     ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartTimeMillis, lockManager, readLockManager, ConcurrencyUtil.SINGLETON.isAllowInterruptedExceptionFired());
                 } catch (InterruptedException exception) {
@@ -275,7 +275,7 @@ public class ConcurrencyManager implements Serializable {
                     }
                     throw ConcurrencyException.waitWasInterrupted(exception.getMessage());
                 } finally {
-                    this.numberOfWritersWaiting.decrementAndGet();
+                    //this.numberOfWritersWaiting.decrementAndGet();
                 }
             }
             if (currentThreadWillEnterTheWhileWait) {
@@ -352,7 +352,7 @@ public class ConcurrencyManager implements Serializable {
             addReadLockToReadLockManager();
         } finally {
             this.numberOfReaders.incrementAndGet();
-            this.totalNumberOfKeysAcquiredForReading.incrementAndGet();
+         //   this.totalNumberOfKeysAcquiredForReading.incrementAndGet();
         }
     }
 
@@ -415,9 +415,9 @@ public class ConcurrencyManager implements Serializable {
      * Number of writers that want the lock.
      * This is used to ensure that a writer is not starved.
      */
-    public int getNumberOfWritersWaiting() {
-        return numberOfWritersWaiting.get();
-    }
+    //public int getNumberOfWritersWaiting() {
+    //    return numberOfWritersWaiting.get();
+    //}
 
     /**
      * Return if a thread has acquire this manager.
@@ -588,7 +588,7 @@ public class ConcurrencyManager implements Serializable {
         if (this.depth.get() == 0) {
             this.activeThread = null;
             if (shouldTrackStack){
-                this.stack = null;
+                //this.stack = null;
             }
             this.lockedByMergeManager = false;
             notifyAll();
@@ -686,7 +686,7 @@ public class ConcurrencyManager implements Serializable {
      */
     public synchronized void releaseReadLock() throws ConcurrencyException {
         if (this.numberOfReaders.get() == 0) {
-            this.totalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero.incrementAndGet();
+            //this.totalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero.incrementAndGet();
             try {
                 removeReadLockFromReadLockManager();
             } catch (Exception e) {
@@ -698,7 +698,7 @@ public class ConcurrencyManager implements Serializable {
                 removeReadLockFromReadLockManager();
             } finally {
                 this.numberOfReaders.decrementAndGet();
-                this.totalNumberOfKeysReleasedForReading.incrementAndGet();
+                //this.totalNumberOfKeysReleasedForReading.incrementAndGet();
             }
         }
         if (this.numberOfReaders.get() == 0) {
@@ -747,9 +747,9 @@ public class ConcurrencyManager implements Serializable {
      * Number of writers that want the lock.
      * This is used to ensure that a writer is not starved.
      */
-    protected void setNumberOfWritersWaiting(int numberOfWritersWaiting) {
-        this.numberOfWritersWaiting.set(numberOfWritersWaiting);
-    }
+    //protected void setNumberOfWritersWaiting(int numberOfWritersWaiting) {
+    //    this.numberOfWritersWaiting.set(numberOfWritersWaiting);
+    //}
 
     public synchronized void transitionToDeferredLock() {
         Thread currentThread = Thread.currentThread();
@@ -820,11 +820,11 @@ public class ConcurrencyManager implements Serializable {
     }
 
     public Exception getStack() {
-        return stack;
+        return null;
     }
 
     public void setStack(Exception stack) {
-        this.stack = stack;
+        //this.stack = stack;
     }
 
     public static boolean shouldTrackStack() {
@@ -894,24 +894,24 @@ public class ConcurrencyManager implements Serializable {
     }
 
     /** Getter for {@link #concurrencyManagerCreationDate} */
-    public Date getConcurrencyManagerCreationDate() {
-        return concurrencyManagerCreationDate;
-    }
+    //public Date getConcurrencyManagerCreationDate() {
+    //    return concurrencyManagerCreationDate;
+    //}
 
     /** Getter for {@link #totalNumberOfKeysAcquiredForReading} */
-    public long getTotalNumberOfKeysAcquiredForReading() {
-        return totalNumberOfKeysAcquiredForReading.get();
-    }
+    //public long getTotalNumberOfKeysAcquiredForReading() {
+    //    return totalNumberOfKeysAcquiredForReading.get();
+    //}
 
     /** Getter for {@link #totalNumberOfKeysReleasedForReading} */
-    public long getTotalNumberOfKeysReleasedForReading() {
-        return totalNumberOfKeysReleasedForReading.get();
-    }
+    //public long getTotalNumberOfKeysReleasedForReading() {
+    //    return totalNumberOfKeysReleasedForReading.get();
+    //}
 
     /** Getter for {@link #totalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero} */
-    public long getTotalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero() {
-        return totalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero.get();
-    }
+    //public long getTotalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero() {
+    //    return totalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero.get();
+    //}
 
     /** Getter for {@link #THREADS_TO_WAIT_ON_ACQUIRE} */
     public static Map<Thread, ConcurrencyManager> getThreadsToWaitOnAcquire() {
