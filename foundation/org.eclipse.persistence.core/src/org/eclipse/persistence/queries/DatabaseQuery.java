@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -267,6 +267,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     protected int queryTimeout;
 
     protected TimeUnit queryTimeoutUnit;
+
+    protected boolean shouldReturnGeneratedKeys;
 
     /* Used as default for read, means shallow write for modify. */
     public static final int NoCascading = 1;
@@ -1503,7 +1505,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             return null;
         }
         SQLCall call = (SQLCall) queryMechanism.getCall().clone();
-        call.setUsesBinding(false);
+        call.setUsesBinding(false); 
         call.translate((AbstractRecord) translationRow, queryMechanism.getModifyRow(), (AbstractSession) session);
         return call.getSQLString();
     }
@@ -1526,7 +1528,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         while (iterator.hasNext()) {
             SQLCall call = (SQLCall) iterator.next();
             call = (SQLCall) call.clone();
-            call.setUsesBinding(false);
+            call.setUsesBinding(false); 
             call.translate((AbstractRecord) translationRow, queryMechanism.getModifyRow(), (AbstractSession) session);
             calls.add(call.getSQLString());
         }
@@ -2423,6 +2425,18 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
+     * ADVANCED: JPA flag used to control the behavior of IDENTITY generation. This
+     * flag specifies the behavior when data is retrieved by the find methods
+     * and by the execution of queries.
+     * <p>
+     * This flag is only applicable to Insert queries and will only apply if the database
+     * platform supports {@link java.sql.Statement#RETURN_GENERATED_KEYS}
+     */
+    public void setShouldReturnGeneratedKeys(boolean shouldReturnGeneratedKeys) {
+        this.shouldReturnGeneratedKeys = shouldReturnGeneratedKeys;
+    }
+
+    /**
      * ADVANCED: JPA flag used to control the behavior of the shared cache. This
      * flag specifies the behavior when data is read from the database and when
      * data is committed into the database.
@@ -2631,6 +2645,18 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public boolean shouldRetrieveBypassCache() {
         return this.shouldRetrieveBypassCache;
+    }
+
+    /**
+     * ADVANCED: JPA flag used to control the behavior of IDENTITY generation. This
+     * flag specifies the behavior when data is retrieved by the find methods
+     * and by the execution of queries.
+     * <p>
+     * This flag is only applicable to Insert queries and will only apply if the database
+     * platform supports {@link java.sql.Statement#RETURN_GENERATED_KEYS}
+     */
+    public boolean shouldReturnGeneratedKeys() {
+        return this.shouldReturnGeneratedKeys;
     }
 
     /**

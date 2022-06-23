@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -96,10 +96,28 @@ public class DatasourcePlatform implements Platform {
     /** If sequences should start at Next Value */
     protected boolean defaultSeqenceAtNextValue;
 
+    /**
+     * This property configures if the database platform will use {@link java.sql.Statement#getGeneratedKeys()}, 
+     * or a separate query, in order to obtain javax.persistence.GenerationType.IDENTITY generated values.
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>"<code>true</code>" - IDENTITY generated values will be obtained with {@link java.sql.Statement#getGeneratedKeys()}
+     * <li>"<code>false</code>" (DEFAULT) - IDENTITY generated values will be obtained with a separate query {@link #buildSelectQueryForIdentity()}
+     * </ul>
+     * <p>
+     * See:
+     * <ul>
+     * <li>{@link #buildSelectQueryForIdentity()} will be disabled if this property is enabled
+     * </ul>
+     */
+    protected boolean supportsReturnGeneratedKeys;
+
     public DatasourcePlatform() {
         this.tableQualifier = "";
         this.startDelimiter = "";
         this.endDelimiter = "";
+        this.supportsReturnGeneratedKeys = false;
     }
 
     /**
@@ -443,6 +461,31 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.except());
         addOperator(ExpressionOperator.exceptAll());
 
+        addOperator(ExpressionOperator.count());
+        addOperator(ExpressionOperator.sum());
+        addOperator(ExpressionOperator.average());
+        addOperator(ExpressionOperator.minimum());
+        addOperator(ExpressionOperator.maximum());
+        addOperator(ExpressionOperator.distinct());
+        addOperator(ExpressionOperator.notOperator());
+        addOperator(ExpressionOperator.ascending());
+        addOperator(ExpressionOperator.descending());
+        addOperator(ExpressionOperator.as());
+        addOperator(ExpressionOperator.nullsFirst());
+        addOperator(ExpressionOperator.nullsLast());
+        addOperator(ExpressionOperator.any());
+        addOperator(ExpressionOperator.some());
+        addOperator(ExpressionOperator.all());
+        addOperator(ExpressionOperator.in());
+        addOperator(ExpressionOperator.inSubQuery());
+        addOperator(ExpressionOperator.notIn());
+        addOperator(ExpressionOperator.notInSubQuery());
+
+        addOperator(ExpressionOperator.and());
+        addOperator(ExpressionOperator.or());
+        addOperator(ExpressionOperator.isNull());
+        addOperator(ExpressionOperator.notNull());
+
         // Date
         addOperator(ExpressionOperator.addMonths());
         addOperator(ExpressionOperator.dateToString());
@@ -457,11 +500,28 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.extract());
 
         // Math
-        addOperator(ExpressionOperator.simpleMath(ExpressionOperator.Add, "+"));
-        addOperator(ExpressionOperator.simpleMath(ExpressionOperator.Subtract, "-"));
-        addOperator(ExpressionOperator.simpleMath(ExpressionOperator.Multiply, "*"));
-        addOperator(ExpressionOperator.simpleMath(ExpressionOperator.Divide, "/"));
+        addOperator(ExpressionOperator.add());
+        addOperator(ExpressionOperator.subtract());
+        addOperator(ExpressionOperator.multiply());
+        addOperator(ExpressionOperator.divide());
         addOperator(ExpressionOperator.negate());
+
+        addOperator(ExpressionOperator.equal());
+        addOperator(ExpressionOperator.notEqual());
+        addOperator(ExpressionOperator.lessThan());
+        addOperator(ExpressionOperator.lessThanEqual());
+        addOperator(ExpressionOperator.greaterThan());
+        addOperator(ExpressionOperator.greaterThanEqual());
+
+        addOperator(ExpressionOperator.like());
+        addOperator(ExpressionOperator.likeEscape());
+        addOperator(ExpressionOperator.notLike());
+        addOperator(ExpressionOperator.notLikeEscape());
+        addOperator(ExpressionOperator.between());
+        addOperator(ExpressionOperator.notBetween());
+
+        addOperator(ExpressionOperator.exists());
+        addOperator(ExpressionOperator.notExists());
 
         addOperator(ExpressionOperator.ceil());
         addOperator(ExpressionOperator.cos());
@@ -770,6 +830,15 @@ public class DatasourcePlatform implements Platform {
     }
 
     /**
+     * Indicates whether the platform supports the use of {@link java.sql.Statement#RETURN_GENERATED_KEYS}.
+     * If supported, IDENTITY values will be obtained through {@link java.sql.Statement#getGeneratedKeys()}
+     * and will replace usage of {@link #buildSelectQueryForIdentity()}
+     */
+    public void setSupportsReturnGeneratedKeys(boolean supportsReturnGeneratedKeys) {
+        this.supportsReturnGeneratedKeys = supportsReturnGeneratedKeys;
+    }
+
+    /**
      * Add sequence corresponding to the name.
      * Use this method with isSessionConnected parameter set to true
      * to add a sequence to connected session.
@@ -986,6 +1055,15 @@ public class DatasourcePlatform implements Platform {
     }
 
     /**
+     * Indicates whether the platform supports the use of {@link java.sql.Statement#RETURN_GENERATED_KEYS}.
+     * If supported, IDENTITY values will be obtained through {@link java.sql.Statement#getGeneratedKeys()}
+     * and will replace usage of {@link #buildSelectQueryForIdentity()}
+     */
+    public boolean supportsReturnGeneratedKeys() {
+        return supportsReturnGeneratedKeys;
+    }
+
+    /**
      * INTERNAL:
      * Returns query used to read value generated by sequence object (like Oracle sequence).
      * This method is called when sequence object NativeSequence is connected,
@@ -1016,6 +1094,9 @@ public class DatasourcePlatform implements Platform {
      * the returned query used until the sequence is disconnected.
      * If the platform supportsIdentity then (at least) one of buildSelectQueryForIdentity
      * methods should return non-null query.
+     * <p>
+     * Alternatively, if the platform supports {@link java.sql.Statement#getGeneratedKeys()}, 
+     * see {@link DatabasePlatform#supportsReturnGeneratedKeys()}
      */
     public ValueReadQuery buildSelectQueryForIdentity() {
         return null;

@@ -19,6 +19,8 @@ on:
     branches: [ '2.7' ]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+env:
+  maven_version: 3.8.6
 jobs:
   build:
     name: Test on JDK ${{ matrix.java_version }}
@@ -79,9 +81,9 @@ jobs:
           echo "eclipse.install.dir=$HOME/extension.lib.external/eclipse" >> $HOME/build.properties
       - name: Build
         run: |
-          export M2_HOME=/usr/share/apache-maven-3.8.5
+          export M2_HOME=/usr/share/apache-maven-${{ env.maven_version }}
           ant -f antbuild.xml build
       - name: Verify
         run: |
-          export M2_HOME=/usr/share/apache-maven-3.8.5
+          export M2_HOME=/usr/share/apache-maven-${{ env.maven_version }}
           ant -f antbuild.xml -Dtest.fail.fast=true -Dfail.on.error=true test-lrg
