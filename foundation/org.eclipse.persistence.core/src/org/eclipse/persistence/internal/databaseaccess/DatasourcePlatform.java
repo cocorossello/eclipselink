@@ -86,10 +86,7 @@ public class DatasourcePlatform implements Platform {
     /** Delimiter to use for fields and tables using spaces or other special values */
     protected String startDelimiter = null;
     protected String endDelimiter = null;
-
-    /** Ensures that only one thread at a time can add/remove sequences */
-    protected Object sequencesLock = new Boolean(true);
-
+    
     /** If the native sequence type is not supported, if table sequencing should be used. */
     protected boolean defaultNativeSequenceToTable;
 
@@ -847,7 +844,7 @@ public class DatasourcePlatform implements Platform {
      */
     @Override
     public void addSequence(Sequence sequence, boolean isSessionConnected) {
-        synchronized(sequencesLock) {
+        synchronized(Thread.currentThread()) {
             if (isSessionConnected) {
                 if (this.sequences == null) {
                     this.sequences = new HashMap();
@@ -899,7 +896,7 @@ public class DatasourcePlatform implements Platform {
     @Override
     public Sequence removeSequence(String seqName) {
         if (this.sequences != null) {
-            synchronized(sequencesLock) {
+            synchronized(Thread.currentThread()) {
                 return (Sequence)this.sequences.remove(seqName);
             }
         } else {

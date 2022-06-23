@@ -170,9 +170,9 @@ public abstract class DistributedCacheMergeTest extends TestCase {
         }
 
         try {
-            while (semaphore.getNumberOfWritersWaiting() == 0) {
-                Thread.sleep(10);
-            }
+           // while (semaphore.getNumberOfWritersWaiting() == 0) {
+           //     Thread.sleep(10);
+           // }
         } catch (Exception e) {
             throw new TestErrorException("Error while getting Thread to sleep", e);
         }
