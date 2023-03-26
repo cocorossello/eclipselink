@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 Hans Harz, Andrew Rustleund, IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -93,20 +93,13 @@ public class MetadataAsmFactory extends MetadataFactory {
     protected void buildClassMetadata(MetadataClass metadataClass, String className, boolean isLazy) {
         ClassMetadataVisitor visitor = new ClassMetadataVisitor(metadataClass, isLazy);
         InputStream stream = null;
+        String resourceString = className.replace('.', '/') + ".class";
+        boolean markSupported = false;
         try {
-            String resourceString = className.replace('.', '/') + ".class";
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                final String f_resourceString = resourceString;
-                stream = AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
-                    @Override
-                    public InputStream run() {
-                        return m_loader.getResourceAsStream(f_resourceString);
-                    }
-                });
-            } else {
-                stream = m_loader.getResourceAsStream(resourceString);
+            stream = readResource(resourceString);
+            if (markSupported = stream.markSupported()) {
+                stream.mark(Integer.MAX_VALUE);
             }
-
             ClassReader reader = new ClassReader(stream);
             Attribute[] attributes = new Attribute[0];
             reader.accept(visitor, attributes, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
@@ -115,19 +108,33 @@ public class MetadataAsmFactory extends MetadataFactory {
             // supported and tested JDK
             // in such case log a warning and try to re-read the class
             // without class version check
-            SessionLog log = getLogger().getSession() != null
-                    ? getLogger().getSession().getSessionLog() : AbstractSessionLog.getLog();
-            if (log.shouldLog(SessionLog.WARNING, SessionLog.METADATA)) {
-                SessionLogEntry entry = new SessionLogEntry(getLogger().getSession(), SessionLog.WARNING, SessionLog.METADATA, iae);
-                entry.setMessage(ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] { className }));
-                log.log(entry);
-            }
             if (stream != null) {
+                if (markSupported) {
+                    try {
+                        stream.reset();
+                    } catch (IOException e) {
+                        try {
+                            stream.close();
+                        } catch (IOException ex) {
+                            //ignore
+                        }
+                        stream = readResource(resourceString);
+                    }
+                } else {
+                    try {
+                        stream.close();
+                    } catch (IOException ex) {
+                        //ignore
+                    }
+                    stream = readResource(resourceString);
+                }
                 try {
                     ClassReader reader = new EclipseLinkClassReader(stream);
                     Attribute[] attributes = new Attribute[0];
                     reader.accept(visitor, attributes, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
                 } catch (Exception e) {
+                    SessionLog log = getLogger().getSession() != null
+                            ? getLogger().getSession().getSessionLog() : AbstractSessionLog.getLog();
                     // our fall-back failed, this is severe
                     if (log.shouldLog(SessionLog.SEVERE, SessionLog.METADATA)) {
                         SessionLogEntry entry = new SessionLogEntry(getLogger().getSession(), SessionLog.SEVERE, SessionLog.METADATA, e);
@@ -140,11 +147,6 @@ public class MetadataAsmFactory extends MetadataFactory {
                 addMetadataClass(getVirtualMetadataClass(className));
             }
         } catch (Exception exception) {
-            SessionLog log = getLogger().getSession() != null
-                    ? getLogger().getSession().getSessionLog() : AbstractSessionLog.getLog();
-            if (log.shouldLog(SessionLog.FINEST, SessionLog.METADATA)) {
-                log.logThrowable(SessionLog.FINEST, SessionLog.METADATA, exception);
-            }
             addMetadataClass(getVirtualMetadataClass(className));
         } finally {
             try {
@@ -238,6 +240,19 @@ public class MetadataAsmFactory extends MetadataFactory {
                     }
                 }
             }
+        }
+    }
+
+    private InputStream readResource(String name) {
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            return AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
+                @Override
+                public InputStream run() {
+                    return m_loader.getResourceAsStream(name);
+                }
+            });
+        } else {
+            return m_loader.getResourceAsStream(name);
         }
     }
 
@@ -552,11 +567,7 @@ public class MetadataAsmFactory extends MetadataFactory {
                     metadataClass.addInterface(reflectInterface.getName());
                 }
             } catch (Exception failed) {
-                SessionLog log = getLogger().getSession() != null
-                        ? getLogger().getSession().getSessionLog() : AbstractSessionLog.getLog();
-                if (log.shouldLog(SessionLog.FINE, SessionLog.METADATA)) {
-                    log.logThrowable(SessionLog.FINE, SessionLog.METADATA, failed);
-                }
+                //ignore
                 metadataClass.setIsAccessible(false);
             }
         } else {
