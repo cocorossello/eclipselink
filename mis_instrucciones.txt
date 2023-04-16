@@ -4,9 +4,10 @@ Bajar el eclipse SDK
 
 
 set PATH=%PATH%;C:\tools\apache-ant-1.9.15-bin\apache-ant-1.9.15\bin
-set JAVA_HOME=C:\Users\vrossello\.jdks\temurin-1.8.0_332
+set ANT_HOME=C:\tools\apache-ant-1.9.15-bin\apache-ant-1.9.15\
+set JAVA_HOME=C:\Users\cocor\.jdks\corretto-11.0.17
 set M2_HOME=C:\tools\apache-maven-3.6.3-bin\apache-maven-3.6.3
-ant -f antbuild.xml -Djunit.lib=C:\tools\junit-4.12.jar -Declipse.install.dir=C:\tools\eclipse-SDK-4.2.1-win32-x86_64\eclipse clean build-distribution
+ant -f antbuild.xml -Djunit.lib=C:\tools\junit-4.12.jar -Declipse.install.dir=C:\tools\eclipse-SDK-4.10-win32-x86_64\eclipse clean build-distribution -Dgenerate.oracle.p2=true
 
 Del eclipselink.jar de la raiz:
 
@@ -27,8 +28,12 @@ xr
  uploadToNexus.xml :
  Poner el repo-user y repo-password
  
+En la carpeta plugins renombrar la version de los archivos  a la que estamos poniendo
+org.eclipse.persistence.core.source_2.7.10.TRAVELC.2.qualifier
+org.eclipse.persistence.core_2.7.10.TRAVELC.2.qualifier.jar
 
-ant -f uploadToNexus.xml -Drelease.version=2.7.10.TRAVELC.1 -Dbuild.type=SNAPSHOT -Dgit.hash=32adsalksdfjfsdao123213
+
+ant -f uploadToNexus.xml -Drelease.version=2.7.10.TRAVELC.2 -Dbuild.type=SNAPSHOT  -Dantbuild.dir=./
 
 
  coger de lib el maven-ant-tasks.jar y ponerlo en ANT_HOME/lib
