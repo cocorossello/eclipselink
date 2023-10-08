@@ -277,6 +277,15 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             }
             query.setProperty(this, batchQuery);
         }
+        //travelc parche
+        if (query.shouldCascadeAllParts() || (query.shouldCascadePrivateParts() && isPrivateOwned()) || (query.shouldCascadeByMapping())) {
+            batchQuery.setCascadePolicy(query.getCascadePolicy());
+            batchQuery.setShouldMaintainCache(query.shouldMaintainCache());
+            //bug 3802197 - cascade binding and prepare settings
+            batchQuery.setShouldBindAllParameters(query.getShouldBindAllParameters());
+            batchQuery.setShouldPrepare(query.shouldPrepare());
+        }
+        //travelc parche fin
         return this.indirectionPolicy.valueFromBatchQuery(batchQuery, row, query, parentCacheKey);
     }
 
@@ -2303,6 +2312,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
         // If the source query is cascading then the target query must use the same settings.
         if (targetQuery.isObjectLevelReadQuery()) {
+            //Travelc parche: quito el cascadeRefresh
             if (sourceQuery.shouldCascadeAllParts() || (this.isPrivateOwned && sourceQuery.shouldCascadePrivateParts()) || (this.cascadeRefresh && sourceQuery.shouldCascadeByMapping())) {
                 // If the target query has already been cloned (we're refreshing) avoid
                 // re-cloning the query again.
