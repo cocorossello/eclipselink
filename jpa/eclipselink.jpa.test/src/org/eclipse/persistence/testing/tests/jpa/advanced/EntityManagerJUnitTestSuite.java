@@ -336,6 +336,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testBeginTransactionClose");
         tests.add("testClose");
         tests.add("testPersistOnNonEntity");
+        tests.add("testPersistRemoveFind");
         tests.add("testWRITELock");
         tests.add("testOPTIMISTIC_FORCE_INCREMENTLock");
         tests.add("testReadOnlyTransactionalData");
@@ -1309,8 +1310,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         int lastIndex = firstName.length();
         List employees = em.createQuery("SELECT object(e) FROM Employee e where e.firstName = substring(:p1, :p2, :p3)").
             setParameter("p1", firstName).
-            setParameter("p2", new Integer(firstIndex)).
-            setParameter("p3", new Integer(lastIndex)).
+            setParameter("p2", Integer.valueOf(firstIndex)).
+            setParameter("p3", Integer.valueOf(lastIndex)).
             getResultList();
 
         // clean up
@@ -5004,6 +5005,43 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Assert.assertTrue(testPass);
     }
 
+    /**
+     * Test for issue 1950 Duplicate objects in UnitOfWorkImpl.primaryKeyToNewObjects
+     *
+     * Objects may potentially be added to UnitOfWorkImpl.primaryKeyToNewObjects both during
+     * the call to UnitOfWorkImpl#assignSequenceNumber and then again in UnitOfWorkImpl#registerNewObjectClone.
+     * This can cause the EntityManager to return already removed entities, as only one of the saved
+     * references is removed.
+     */
+    public void testPersistRemoveFind()
+    {
+        EntityManager em = createEntityManager();
+        Employee employee = new Employee();
+        employee.setFirstName("Employee");
+        employee.setLastName("1");
+        Employee employee2 = new Employee();
+        employee2.setFirstName("Employee");
+        employee2.setLastName("2");
+        beginTransaction(em);
+        try {
+            em.persist(employee);
+            /* In order to hit the problematic code, we have to make sure there are still objects in the cache after
+             * we remove the first one, because otherwise the call to UnitOfWorkImpl#getObjectFromNewObjects
+             * will be skipped. Therefore, we register another employee object, which we won't remove. */
+            em.persist(employee2);
+            Employee clone = em.find(Employee.class, employee.getId());
+            // remove employee 1
+            em.remove(clone);
+            // a find call should not return employee 1, since we removed it earlier
+            clone = em.find(Employee.class, employee.getId());
+            assertNull("Removed employee was returned by em.find!", clone);
+        } catch (Exception e) {
+            fail("Unexpected exception thrown during test: " + e);
+        } finally {
+            rollbackTransaction(em);
+        }
+    }
+
     //detach(nonentity) throws illegalArgumentException
     public void testDetachNonEntity() {
         boolean testPass = false;
@@ -5839,17 +5877,17 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertTrue("FETCH_GROUP not set.", olrQuery.getFetchGroup() == fetchGroup);
 
         // Timeout
-        query.setHint(QueryHints.JDBC_TIMEOUT, new Integer(100));
+        query.setHint(QueryHints.JDBC_TIMEOUT, Integer.valueOf(100));
         assertTrue("Timeout not set.", olrQuery.getQueryTimeout() == 100);
 
         // JDBC
-        query.setHint(QueryHints.JDBC_FETCH_SIZE, new Integer(101));
+        query.setHint(QueryHints.JDBC_FETCH_SIZE, Integer.valueOf(101));
         assertTrue("Fetch-size not set.", olrQuery.getFetchSize() == 101);
 
-        query.setHint(QueryHints.JDBC_MAX_ROWS, new Integer(103));
+        query.setHint(QueryHints.JDBC_MAX_ROWS, Integer.valueOf(103));
         assertTrue("Max-rows not set.", olrQuery.getMaxRows() == 103);
 
-        query.setHint(QueryHints.JDBC_FIRST_RESULT, new Integer(123));
+        query.setHint(QueryHints.JDBC_FIRST_RESULT, Integer.valueOf(123));
         assertTrue("JDBC_FIRST_RESULT not set.", olrQuery.getFirstResult() == 123);
 
         // Refresh
@@ -7410,7 +7448,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em = createEntityManager();
         beginTransaction(em);
         try {
-            employee = em.find(Employee.class, new Integer(id));
+            employee = em.find(Employee.class, Integer.valueOf(id));
             address = employee.getAddress();
 
             assertTrue("The address was not persisted.", employee.getAddress() != null);
@@ -7452,7 +7490,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         int managerId = manager.getId();
 
         beginTransaction(em);
-        employee = em.find(Employee.class, new Integer(id));
+        employee = em.find(Employee.class, Integer.valueOf(id));
         employee.getAddress();
 
         address = new Address();
@@ -7476,7 +7514,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em = createEntityManager();
         beginTransaction(em);
 
-        employee = em.find(Employee.class, new Integer(id));
+        employee = em.find(Employee.class, Integer.valueOf(id));
         address = employee.getAddress();
         manager = employee.getManager();
 
@@ -7486,8 +7524,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertTrue("The manager was not persisted.", employee.getManager() != null);
         assertTrue("The manager was not correctly persisted.", employee.getManager().getFirstName().equals("Metro"));
 
-        Address initialAddress = em.find(Address.class, new Integer(addressId));
-        Employee initialManager = em.find(Employee.class, new Integer(managerId));
+        Address initialAddress = em.find(Address.class, Integer.valueOf(addressId));
+        Employee initialManager = em.find(Employee.class, Integer.valueOf(managerId));
         employee.setAddress((Address)null);
         employee.setManager((Employee)null);
         em.remove(address);
@@ -7552,7 +7590,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em = createEntityManager();
         beginTransaction(em);
 
-        employee = em.find(Employee.class, new Integer(id));
+        employee = em.find(Employee.class, Integer.valueOf(id));
         address = employee.getAddress();
         manager = employee.getManager();
 
@@ -7562,8 +7600,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertTrue("The manager was not persisted.", employee.getManager() != null);
         assertTrue("The manager was not correctly persisted.", employee.getManager().getFirstName().equals("Metro"));
 
-        Address initialAddress = em.find(Address.class, new Integer(addressId));
-        Employee initialManager = em.find(Employee.class, new Integer(managerId));
+        Address initialAddress = em.find(Address.class, Integer.valueOf(addressId));
+        Employee initialManager = em.find(Employee.class, Integer.valueOf(managerId));
         employee.setAddress((Address)null);
         employee.setManager((Employee)null);
         em.remove(address);
@@ -7605,7 +7643,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em = createEntityManager();
 
         beginTransaction(em);
-        employee = em.find(Employee.class, new Integer(id));
+        employee = em.find(Employee.class, Integer.valueOf(id));
         employee.getAddress();
         employee.getManager();
 
@@ -7629,7 +7667,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         em = createEntityManager();
         beginTransaction(em);
-        employee = em.find(Employee.class, new Integer(id));
+        employee = em.find(Employee.class, Integer.valueOf(id));
         address = employee.getAddress();
         manager = employee.getManager();
 
@@ -7639,8 +7677,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertTrue("The manager was not persisted.", employee.getManager() != null);
         assertTrue("The manager was not correctly persisted.", employee.getManager().getFirstName().equals("Metro"));
 
-        Address initialAddress = em.find(Address.class, new Integer(addressId));
-        Employee initialManager = em.find(Employee.class, new Integer(managerId));
+        Address initialAddress = em.find(Address.class, Integer.valueOf(addressId));
+        Employee initialManager = em.find(Employee.class, Integer.valueOf(managerId));
 
         employee.setAddress((Address)null);
         employee.setManager((Employee)null);
@@ -8409,7 +8447,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             errorMsg = errorMsg + "; em.getDelegate() threw wrong exception: " + ex.getMessage();
         }
         try {
-            em.getReference(Employee.class, new Integer(1));
+            em.getReference(Employee.class, Integer.valueOf(1));
             errorMsg = errorMsg + "; em.getReference() didn't throw exception";
         } catch(IllegalStateException ise) {
             // expected
