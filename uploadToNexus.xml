@@ -85,7 +85,7 @@
     <property name="snapshotId"  value="tr2-maven-repo-snapshots"/>
     <property name="snapshotURL" value="https://nexus.travelcdev.com/repository/maven-releases/"/>
     <property name="repo-user"  value="admin"/>
-    <property name="repo-password" value="xxx"/>
+    <property name="repo-password" value="travelCompositor123"/>
 
 
     <target name="javadoc-path-init">

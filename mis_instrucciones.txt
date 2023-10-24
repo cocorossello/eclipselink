@@ -29,11 +29,11 @@ xr
  Poner el repo-user y repo-password
  
 En la carpeta plugins renombrar la version de los archivos  a la que estamos poniendo
-org.eclipse.persistence.core.source_2.7.13.TRAVELC.6.qualifier
-org.eclipse.persistence.core_2.7.13.TRAVELC.6.qualifier.jar
+org.eclipse.persistence.core.source_2.7.13.TRAVELC.8.qualifier.jar
+org.eclipse.persistence.core_2.7.13.TRAVELC.8.qualifier.jar
 
 
-ant -f uploadToNexus.xml -Drelease.version=2.7.13.TRAVELC.6 -Dbuild.type=SNAPSHOT  -Dantbuild.dir=./
+ant -f uploadToNexus.xml -Drelease.version=2.7.13.TRAVELC.8 -Dbuild.type=SNAPSHOT  -Dantbuild.dir=./
 
 
  coger de lib el maven-ant-tasks.jar y ponerlo en ANT_HOME/lib
