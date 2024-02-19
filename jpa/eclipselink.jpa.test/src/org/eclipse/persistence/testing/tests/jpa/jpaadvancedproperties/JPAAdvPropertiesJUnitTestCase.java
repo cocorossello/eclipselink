@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,6 +63,7 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
         suite.addTest(new JPAAdvPropertiesJUnitTestCase("testCopyDescriptorNamedQueryToSessionProperty"));
         suite.addTest(new JPAAdvPropertiesJUnitTestCase("testLoggingTyperProperty"));
         suite.addTest(new JPAAdvPropertiesJUnitTestCase("testProfilerTyperProperty"));
+        suite.addTest(new JPAAdvPropertiesJUnitTestCase("testLoginEncryptorProperty"));
 
         return suite;
     }
@@ -359,5 +360,31 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
         }
         assertTrue("Error deleting Customer", em.find(org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer.class, customerId) == null);
 
+    }
+
+    public void testLoginEncryptorProperty() {
+        if (!isOnServer()) {
+            EntityManager em = createEntityManager(persistenceUnitName);
+            try {
+                //Create new customer
+                beginTransaction(em);
+                Customer customer = ModelExamples.customerExample1();
+                em.persist(customer);
+                em.flush();
+                Integer customerId = customer.getCustomerId();
+                commitTransaction(em);
+
+                //Purge it
+                beginTransaction(em);
+                em.remove(em.find(org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer.class, customerId));
+                commitTransaction(em);
+
+                assertNotNull(customer);
+                assertTrue("CustomizedEncryptor.encryptPassword() method wasn't called.", CustomizedEncryptor.encryptPasswordCounter > 0);
+                assertTrue("CustomizedEncryptor.decryptPassword() method wasn't called.", CustomizedEncryptor.decryptPasswordCounter > 0);
+            } finally {
+                closeEntityManager(em);
+            }
+        }
     }
 }

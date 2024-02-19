@@ -178,7 +178,7 @@ public class PersistenceUnitProperties {
      * </ul>
      * <p>
      * <b>Persistence XML example:</b><pre>
-     * {@code <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />}</pre>
+     * {@code <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />}</pre>
      * <p>
      * The previous value for this property "<code>eclipselink.jdbc.driver</code>" is now deprecated
      * and should be replaced with this new name.
@@ -3771,7 +3771,7 @@ public class PersistenceUnitProperties {
      *    ("memberPu2" -> (
      *       "javax.persistence.jdbc.user" -> "user2",
      *       "javax.persistence.jdbc.password" -> "password2",
-     *       "javax.persistence.jdbc.driver" -> "com.mysql.jdbc.Driver",
+     *       "javax.persistence.jdbc.driver" -> "com.mysql.cj.jdbc.Driver",
      *       "javax.persistence.jdbc.url" -> "jdbc:mysql://my_sql_db_url:3306/user2"
      *    )
      *  )}</pre>
@@ -4166,6 +4166,24 @@ public class PersistenceUnitProperties {
      * </ul>
      */
     public static final String QUERY_RESULTS_CACHE_VALIDATION = "eclipselink.query-results-cache.validation";
+
+    /**
+     * The "<code>eclipselink.login.encryptor</code>" property configures a custom implementation of
+     * {@link org.eclipse.persistence.security.Securable} class used to encrypt and decrypt database password
+     * loaded from "<code>jakarta.persistence.jdbc.password</code>" property.
+     * Usage of this property avoids limitation of {@link SessionCustomizer} which is called when all other
+     * properties have been processed (too late when database login needs to be configured).
+     * If this property is not specified {@link org.eclipse.persistence.internal.security.JCEEncryptor} as a default encryptor is used.
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>the fully qualified name for a class that implements {@link org.eclipse.persistence.security.Securable} interface
+     * </ul>
+     *
+     * @see org.eclipse.persistence.security.Securable
+     * @see org.eclipse.persistence.internal.security.JCEEncryptor
+     */
+    public static final String LOGIN_ENCRYPTOR = "eclipselink.login.encryptor";
 
     /**
      * INTERNAL: The following properties will not be displayed through logging
