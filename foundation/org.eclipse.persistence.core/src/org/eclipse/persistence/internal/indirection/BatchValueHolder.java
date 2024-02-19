@@ -99,6 +99,7 @@ public class BatchValueHolder extends QueryBasedValueHolder {
         super.resetFields();
         this.mapping = null;
         this.originalQuery = null;
+        this.parentCacheKey = null; //Travelc
     }
 
     protected void setMapping(ForeignReferenceMapping mapping) {

@@ -301,6 +301,7 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
             }
             this.removedElements = null;
         }
+        this.valueHolder = null; //Travelc: probamos a poner el valueHolder a null, no parece que tenga sentido que se quede esta referencia
         return newDelegate;
     }
 

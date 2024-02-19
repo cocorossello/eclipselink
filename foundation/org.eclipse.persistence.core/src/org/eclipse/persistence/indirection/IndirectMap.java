@@ -130,6 +130,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
         if (value == null) {
             value = new Hashtable<>(this.initialCapacity, this.loadFactor);
         }
+        this.valueHolder = null; //Travelc: probamos a poner el valueHolder a null, no parece que tenga sentido que se quede esta referencia
         return value;
     }
 
