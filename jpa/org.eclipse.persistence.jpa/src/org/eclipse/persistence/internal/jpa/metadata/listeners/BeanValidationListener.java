@@ -138,7 +138,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
             String beanDescription = "";
             try {
                 beanDescription = constraint.getRootBean().toString();
-                if (beanDescription.length() > 100) {
+                if (beanDescription != null && beanDescription.length() > 100) {
                     beanDescription = beanDescription.substring(0, 100) + "...";
                 }
             } catch (Exception e) {
