@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2018, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -2380,16 +2380,12 @@ public class ExpressionOperator implements Serializable {
             dbStringIndex = 1;
         }
 
-        if (this.argumentIndices == null) {
-            this.argumentIndices = new int[items.size()];
-            for (int i = 0; i < this.argumentIndices.length; i++){
-                this.argumentIndices[i] = i;
-            }
-        }
+        // Empty `this.argumentIndices` means the operator expects a list of arguments with a variable length.
+        // #2136: As operator's state is shared among all threads, we are not allowed to modify the field `this.argumentIndices`.
+        int[] argumentIndexes = (this.argumentIndices != null ? this.argumentIndices : arrayIndexSequence(items.size()));
 
         String[] dbStrings = getDatabaseStrings(items.size());
-        for (int i = 0; i < this.argumentIndices.length; i++) {
-            final int index = this.argumentIndices[i];
+        for (final int index : argumentIndexes) {
             Expression item = items.get(index);
             if ((this.selector == Ref) || ((this.selector == Deref) && (item.isObjectExpression()))) {
                 DatabaseTable alias = ((ObjectExpression)item).aliasForTable(((ObjectExpression)item).getDescriptor().getTables().firstElement());
@@ -2403,6 +2399,14 @@ public class ExpressionOperator implements Serializable {
                 printer.printString(dbStrings[dbStringIndex++]);
             }
         }
+    }
+
+    private int[] arrayIndexSequence(int size) {
+        int[] result = new int[size];
+        for (int i = 0; i < size; i++) {
+            result[i] = i;
+        }
+        return result;
     }
 
     /**
