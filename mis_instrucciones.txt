@@ -24,7 +24,7 @@ ant -f antbuild.xml -Djunit.lib=e:\tools\junit-4.12.jar -Declipse.install.dir=E:
 
 Del eclipselink.jar de la raiz:
 
-Quitar commonj y legal del jar, asi como los html (basta con dejar las carpetas y el module-info.class)
+Quitar commonj del jar, asi como los html (basta con dejar las carpetas y el module-info.class)
 
 De org/eclipse/persistence quitar 
 dbws
@@ -44,11 +44,11 @@ Cambiados los src de eclipselink-asm para java 24
  Poner el repo-user y repo-password
  
 En la carpeta plugins renombrar la version de los archivos  a la que estamos poniendo
-org.eclipse.persistence.core.source_2.7.17.TRAVELC.2.qualifier.jar
-org.eclipse.persistence.core_2.7.17.TRAVELC.2.qualifier.jar
+org.eclipse.persistence.core.source_2.7.17.TRAVELC.3.qualifier.jar
+org.eclipse.persistence.core_2.7.17.TRAVELC.3.qualifier.jar
 
 
-ant -f uploadToNexus.xml -Drelease.version=2.7.17.TRAVELC.2 -Dbuild.type=SNAPSHOT  -Dantbuild.dir=./
+ant -f uploadToNexus.xml -Drelease.version=2.7.17.TRAVELC.3 -Dbuild.type=SNAPSHOT  -Dantbuild.dir=./
 
 
  coger de lib el maven-ant-tasks.jar y ponerlo en ANT_HOME/lib
