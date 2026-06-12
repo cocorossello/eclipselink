@@ -320,6 +320,7 @@ public class QueryHintsHandler {
             addHint(new ReturnNameValuePairsHint());
             addHint(new PrintInnerJoinInWhereClauseHint());
             addHint(new QueryResultsCacheValidation());
+            addHint(new StatelesQueryHint());
         }
 
         Hint(String name, String defaultValue) {
@@ -2246,5 +2247,26 @@ public class QueryHintsHandler {
             return query;
         }
     }
+
+    protected static class StatelesQueryHint extends Hint {
+        StatelesQueryHint() {
+            super(QueryHints.STATELESS_QUERY, HintValues.FALSE);
+            valueArray = new Object[][] {
+                    {HintValues.TRUE, Boolean.TRUE},
+                    {HintValues.FALSE, Boolean.FALSE}
+            };
+        }
+
+        @Override
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if(Boolean.TRUE.equals(valueToApply)) {
+                new ReadOnlyHint().applyToDatabaseQuery(true, query, loader, activeSession);
+                new MaintainCacheHint().applyToDatabaseQuery(false, query, loader, activeSession);
+                new CascadePolicyHint().applyToDatabaseQuery(DatabaseQuery.CascadeByMapping, query, loader, activeSession);
+            }
+            return query;
+        }
+    }
+
 
 }

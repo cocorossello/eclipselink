@@ -21,6 +21,7 @@
 //       - 429992: JavaSE 8/ASM 5.0.1 support (EclipseLink silently ignores Entity classes with lambda expressions)
 package org.eclipse.persistence.internal.jpa.weaving;
 
+import java.lang.reflect.Modifier;
 import java.util.Iterator;
 
 import org.eclipse.persistence.asm.ASMFactory;
@@ -1492,9 +1493,22 @@ public class ClassWeaver extends ClassVisitor {
         return super.visitAnnotationSuper(desc, visible);
     }
 
+
     @Override
-    public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-        return super.visitFieldSuper(access, name, desc, signature, value);
+    public FieldVisitor visitField(
+            final int access,
+            final String name,
+            final String descriptor,
+            final String signature,
+            final Object value) {
+        if (cv != null) {
+            int newAccess = access;
+            if (!Modifier.isStatic(access) && Modifier.isFinal(access)) {
+                newAccess = access & (~Opcodes.ACC_FINAL);
+            }
+            return cv.visitField(newAccess, name, descriptor, signature, value);
+        }
+        return null;
     }
 
 }

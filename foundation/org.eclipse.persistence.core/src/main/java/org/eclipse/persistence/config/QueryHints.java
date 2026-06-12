@@ -946,6 +946,20 @@ public class QueryHints {
      */
     public static final String INNER_JOIN_IN_WHERE_CLAUSE = "eclipselink.inner-join-in-where-clause";
 
+
+
+
+    /**
+     * Query stateless. La idea es tener una query que no queda en el identityMap y que no produce WeakCacheKeys
+     *
+     * En la practica aplica los hints:
+     *     QueryHints.READ_ONLY, HintValues.TRUE
+     *     QueryHints.MAINTAIN_CACHE, HintValues.FALSE
+     *     QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping
+     *
+     */
+    public static final String STATELESS_QUERY = "travelc.stateless-query";
+
     private QueryHints() {
         // no instance please
     }

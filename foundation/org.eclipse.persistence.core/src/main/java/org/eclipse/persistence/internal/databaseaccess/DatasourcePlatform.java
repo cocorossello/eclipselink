@@ -917,7 +917,7 @@ public class DatasourcePlatform implements Platform {
      */
     @Override
     public void addSequence(Sequence sequence, boolean isSessionConnected) {
-        synchronized(sequencesLock) {
+        synchronized(Thread.currentThread()) { //Travelc
             if (isSessionConnected) {
                 if (this.sequences == null) {
                     this.sequences = new HashMap<>();
@@ -970,7 +970,7 @@ public class DatasourcePlatform implements Platform {
     @Override
     public Sequence removeSequence(String seqName) {
         if (this.sequences != null) {
-            synchronized(sequencesLock) {
+            synchronized(Thread.currentThread()) {
                 return this.sequences.remove(seqName);
             }
         } else {

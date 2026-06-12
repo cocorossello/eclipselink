@@ -216,6 +216,7 @@ public class QueryBasedValueHolder<T> extends DatabaseValueHolder<T> {
     protected void resetFields() {
         super.resetFields();
         this.query = null;
+        this.sourceObject = null; //Travelc
     }
 
     /**

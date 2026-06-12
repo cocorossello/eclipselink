@@ -373,7 +373,7 @@ public class ConcurrencyUtil {
         Thread activeThreadObj = concurrencyManager.getActiveThread();
         String activeThread = activeThreadObj != null ? activeThreadObj.getName() : "Null";
         long concurrencyManagerId = concurrencyManager.getConcurrencyManagerId();
-        Date concurrencyManagerCreationDate = concurrencyManager.getConcurrencyManagerCreationDate();
+        //Date concurrencyManagerCreationDate = concurrencyManager.getConcurrencyManagerCreationDate();
         if (concurrencyManager instanceof CacheKey) {
             CacheKey cacheKey = (CacheKey) concurrencyManager;
             Object primaryKey = cacheKey.getKey();
@@ -384,19 +384,19 @@ public class ConcurrencyUtil {
                     String.valueOf(System.identityHashCode(cacheKeyObject)),
                     cacheKeyClass, String.valueOf(System.identityHashCode(cacheKey)),
                     activeThread, concurrencyManager.getNumberOfReaders(), concurrencyManagerId,
-                    ConversionManager.getDefaultManager().convertObject(concurrencyManagerCreationDate, String.class)
-                    // metadata of number of times the cache key suffered increases in number readers
-                    , cacheKey.getTotalNumberOfKeysAcquiredForReading(),
-                    cacheKey.getTotalNumberOfKeysReleasedForReading(),
-                    cacheKey.getTotalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero(),
+                    //ConversionManager.getDefaultManager().convertObject(concurrencyManagerCreationDate, String.class)
+                    //// metadata of number of times the cache key suffered increases in number readers
+                    //, cacheKey.getTotalNumberOfKeysAcquiredForReading(),
+                    //cacheKey.getTotalNumberOfKeysReleasedForReading(),
+                    //cacheKey.getTotalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero(),
                     concurrencyManager.getDepth()});
 
         } else {
             return TraceLocalization.buildMessage("concurrency_util_owned_cache_key_is_not_cache_key", new Object[] {cacheKeyClass, concurrencyManager, activeThread,
-                    concurrencyManagerId, ConversionManager.getDefaultManager().convertObject(concurrencyManagerCreationDate, String.class),
-                    concurrencyManager.getTotalNumberOfKeysAcquiredForReading(),
-                    concurrencyManager.getTotalNumberOfKeysReleasedForReading(), concurrencyManager
-                    .getTotalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero(),
+                    //concurrencyManagerId, ConversionManager.getDefaultManager().convertObject(concurrencyManagerCreationDate, String.class),
+                    //concurrencyManager.getTotalNumberOfKeysAcquiredForReading(),
+                    //concurrencyManager.getTotalNumberOfKeysReleasedForReading(), concurrencyManager
+                    //.getTotalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero(),
                     concurrencyManager.getDepth()});
         }
     }
