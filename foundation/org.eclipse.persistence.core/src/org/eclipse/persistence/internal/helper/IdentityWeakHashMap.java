@@ -273,9 +273,6 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
             int index = (hash & 0x7FFFFFFF) % copyOfEntries.length;
             int limitCounter = 0;
             for (WeakEntry e = copyOfEntries[index]; e != null; e = e.next) {
-                if (limitCounter++ > 500000) {
-                    throw new IllegalStateException("Esto va a acabar en bucle infinito, lo corto!!" + key + entries);
-                }
                 if (e.key.get() == key) {
                     EntryReference<V> old = e.value;
                     if (key == obj) {

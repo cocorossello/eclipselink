@@ -162,10 +162,7 @@ public final class HermesParser implements JPAQueryBuilder {
      */
     @Override
     public DatabaseQuery buildQuery(CharSequence jpqlQuery, AbstractSession session) {
-        String queryString = (String) jpqlQuery;
-        synchronized (queryString.intern()) {
-            return populateQueryImp(jpqlQuery, null, session);
-        }
+        return populateQueryImp(jpqlQuery, null, session);
     }
 
     /**
