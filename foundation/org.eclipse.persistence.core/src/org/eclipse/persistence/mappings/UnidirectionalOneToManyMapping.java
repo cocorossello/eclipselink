@@ -397,17 +397,19 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
     public boolean shouldDeferInsert() {
         if (shouldDeferInserts == null) {
             String property = PrivilegedAccessHelper.getSystemProperty(SystemProperties.ONETOMANY_DEFER_INSERTS);
-            shouldDeferInserts = true;
+            boolean deferInserts = true;
             if (property != null) {
-                shouldDeferInserts = "true".equalsIgnoreCase(property);
+                deferInserts  = "true".equalsIgnoreCase(property);
             } else {
                 for (DatabaseField f : targetForeignKeyFields) {
                     if (!f.isNullable()) {
-                        shouldDeferInserts = false;
+                        deferInserts  = false;
                         break;
                     }
                 }
             }
+            //Travelc: publicar shouldDeferInserts al final
+            shouldDeferInserts = deferInserts;
         }
         return shouldDeferInserts;
     }
